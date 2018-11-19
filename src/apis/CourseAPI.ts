@@ -1,6 +1,7 @@
-import axios from "axios";
+import axios, { AxiosResponse, AxiosPromise } from "axios";
 import { getAPI } from "./env";
 import { ID } from "./CommonType";
+import { Course } from "../models";
 
 type ATTRIBUTE = "name" | "detail" | "contract" | "contractType" | "visible";
 const api = `${getAPI()}/course`;
@@ -30,7 +31,8 @@ type SchedulePayload = {
   }
 }
 
-export const createCourse = async (payload: CoursePayload) => await axios.post(`${api}/create`, payload);
+export const createCourse = (payload: CoursePayload): Promise<AxiosResponse<{ result: Course; message: string; }>> =>
+  axios.post(`${api}/create`, payload);
 
 export const getCourses = async () => await axios.get(`${api}/get`);
 export const getCourse = async (id: ID) => await axios.get(`${api}/${id}`);
@@ -48,3 +50,12 @@ export const deleteCourseTeacher = async (id: ID, payload: { teacher: ID }) => a
   url: `${api}/delete/teacher/${id}`,
   data: payload
 });
+
+
+export const fetchCourse = async (payload: CoursePayload) => {
+  try {
+    const res = await createCourse(payload);
+    return res.data.result;
+  } catch (err) {
+  }
+}
