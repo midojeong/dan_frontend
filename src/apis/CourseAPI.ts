@@ -1,7 +1,7 @@
-import axios, { AxiosResponse, AxiosPromise } from "axios";
+import axios from "axios";
 import { getAPI } from "./env";
 import { ID } from "./CommonType";
-import { Course } from "../models";
+import { Course } from "../models/Course";
 
 type ATTRIBUTE = "name" | "detail" | "contract" | "contractType" | "visible";
 const api = `${getAPI()}/course`;
@@ -31,12 +31,42 @@ type SchedulePayload = {
   }
 }
 
-export const createCourse = (payload: CoursePayload): Promise<AxiosResponse<{ result: Course; message: string; }>> =>
-  axios.post(`${api}/create`, payload);
+export const createCourse = async (payload: CoursePayload) => {
+  try {
+    const res = await axios.post(`${api}/create`, payload);
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
 
-export const getCourses = async () => await axios.get(`${api}/get`);
-export const getCourse = async (id: ID) => await axios.get(`${api}/${id}`);
-export const getCourseStudents = async (id: ID) => await axios.get(`${api}/get/students/${id}`);
+export const getCourses = async () => {
+  try {
+    const res = await axios.get(`${api}/get`);
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
+
+export const getCourse = async (id: ID) => {
+  try {
+    const res = await axios.get(`${api}/${id}`)
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
+
+export const getCourseStudents = async (id: ID) => {
+  try {
+    const res = await axios.get(`${api}/get/students/${id}`);
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
+
 export const getCourseSchedules = async (id: ID) => await axios.get(`${api}/get/schedules/${id}`);
 
 export const updateCourseTeacher = async (id: ID, payload: TeacherPayload) => await axios.post(`${api}/update/teacher/${id}`, payload);
@@ -50,12 +80,3 @@ export const deleteCourseTeacher = async (id: ID, payload: { teacher: ID }) => a
   url: `${api}/delete/teacher/${id}`,
   data: payload
 });
-
-
-export const fetchCourse = async (payload: CoursePayload) => {
-  try {
-    const res = await createCourse(payload);
-    return res.data.result;
-  } catch (err) {
-  }
-}

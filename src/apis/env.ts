@@ -1,3 +1,3 @@
 export const getAPI = () => {
-  return "http://localhost:3030/api/v1/";
+  return "http://13.125.194.83:3030/api/v1";
 };

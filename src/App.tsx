@@ -1,18 +1,33 @@
 import React, { Component } from 'react';
 import { ThemeProvider } from "styled-components";
 import {
-  theme, Text
+  BrowserRouter as Router,
+  Route
+} from "react-router-dom";
+import {
+  theme, Layout,
 } from "./components";
+import { CoursePage } from "./pages/Course";
+import { StudentPage } from "./pages/Student";
+import { TeacherPage } from "./pages/Teacher";
+import { InvoicePage } from "./pages/Invoice";
 
 
 class App extends Component {
   render() {
     return (
-      <ThemeProvider theme={theme}>
-        <div>
-          <Text color="black.half">asdajop</Text>
-        </div>
-      </ThemeProvider>
+      <Router>
+        <ThemeProvider theme={theme}>
+          <Route path="/" render={(props) =>
+            <Layout {...props}>
+              <Route path="/course" component={CoursePage} />
+              <Route path="/student" component={StudentPage} />
+              <Route path="/teacher" component={TeacherPage} />
+              <Route path="/invoice" component={InvoicePage} />
+            </Layout>
+          } />
+        </ThemeProvider>
+      </Router>
     );
   }
 }

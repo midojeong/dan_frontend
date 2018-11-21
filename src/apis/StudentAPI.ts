@@ -23,15 +23,68 @@ type StudentPayload = {
 }
 
 // C
-export const createStudent = async (payload: StudentPayload) => await axios.post(`${api}/create`, payload);
+export const createStudent = async (payload: StudentPayload) => {
+  try {
+    const res = await axios.post(`${api}/create`, payload);
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
 
 // R
-export const getStudents = async () => await axios.get(`${api}/get`);
-export const getStudent = async (id: ID) => await axios.get(`${api}/${id}`);
-export const getStudentSessions = async (id: ID) => await axios.get(`${api}/get/sessions/${id}`);
-export const getStudentInvoices = async (id: ID) => await axios.get(`${api}/get/invoices/${id}`);
-export const getStudentCourses = async (id: ID) => await axios.get(`${api}/get/courses/${id}`);
-export const getStudentExtramoney = async (id: ID) => await axios.get(`${api}/get/extramoney/${id}`);
+export const getStudents = async () => {
+  try {
+    const res = await axios.get(`${api}/get`);
+    return res.data.result;
+  } catch (err) {
+  }
+}
+
+export const getStudent = async (id: ID) => {
+  try {
+    const res = await axios.get(`${api}/${id}`);
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
+
+export const getStudentSessions = async (id: ID) => {
+  try {
+    const res = await axios.get(`${api}/get/sessions/${id}`);
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
+
+export const getStudentInvoices = async (id: ID) => {
+  try {
+    const res = await axios.get(`${api}/get/invoices/${id}`);
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
+
+export const getStudentCourses = async (id: ID) => {
+  try {
+    const res = await axios.get(`${api}/get/courses/${id}`);
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
+
+export const getStudentExtramoney = async (id: ID) => {
+  try {
+    const res = await axios.get(`${api}/get/extramoney/${id}`);
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
 
 // U
 export const updateStudent = async (id: ID, attr: ATTRIBUTE, value: any) => await axios.post(`${api}/update/${attr}/${id}`, { [attr]: value });
