@@ -6,7 +6,21 @@ import {
   CourseSchedule,
 } from "../components/CourseComponents";
 import { Route } from "react-router-dom";
-import { getCourses, getCourse, getCourseStudents } from "../apis/CourseAPI";
+import {
+  createCourse,
+
+  getCourse,
+  getCourses,
+  getCourseStudents,
+
+  updateCourse,
+  updateCoursePrice,
+  updateCourseTeacher,
+  updateCourseSchedule,
+
+  deleteCourse,
+  deleteCourseTeacher,
+} from "../apis/CourseAPI";
 
 export class CoursePage extends React.Component<any> {
 
@@ -31,9 +45,35 @@ export class CoursePage extends React.Component<any> {
     this.setState({ student: data });
   }
 
+  updateCourseName = async (id: any, name: string) => {
+    await updateCourse(id, "name", name);
+    this.fetchCourses();
+    this.fetchCourse(id);
+  }
+
+  updateCourseDetail = async (id: any, detail: string) => {
+    await updateCourse(id, "detail", detail);
+    this.fetchCourse(id);
+  }
+
+  updateCoursePrice = async (id: any, price: number) => {
+    await updateCoursePrice(id, { price });
+    this.fetchCourse(id);
+  }
+
+  deleteCourse = () => {
+  }
+
   componentDidMount() {
     this.fetchCourses();
   }
+
+  componentWillReceiveProps(next: any) {
+    if (next.location.pathname.split("/")[2] === "list") {
+      this.fetchCourses();
+    }
+  }
+
 
   render() {
     return (
@@ -50,6 +90,10 @@ export class CoursePage extends React.Component<any> {
               fetchCourses={this.fetchCourses}
               fetchCourse={this.fetchCourse}
               fetchStudents={this.fetchStudents}
+              updateCourseName={this.updateCourseName}
+              updateCoursePrice={this.updateCoursePrice}
+              updateCourseDetail={this.updateCourseDetail}
+              deleteCourse={this.deleteCourse}
             />}
           />
           <Route path="/course/:id/schedules" component={CourseSchedule} />

@@ -1,4 +1,7 @@
 import * as React from "react";
+
+export const Dialog = {};
+/*
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
 import { Flex, Text } from "./styled";
 import Select from 'react-select';
@@ -322,3 +325,4 @@ export class SchedulePicker extends React.Component {
     );
   }
 }
+*/

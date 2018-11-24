@@ -67,7 +67,14 @@ export const getCourseStudents = async (id: ID) => {
   }
 }
 
-export const getCourseSchedules = async (id: ID) => await axios.get(`${api}/get/schedules/${id}`);
+export const getCourseSchedules = async (id: ID) => {
+  try {
+    const res = await axios.get(`${api}/get/schedules/${id}`);
+    return res.data.result;
+  } catch (err) {
+    // TODO
+  }
+}
 
 export const updateCourseTeacher = async (id: ID, payload: TeacherPayload) => await axios.post(`${api}/update/teacher/${id}`, payload);
 export const updateCourseSchedule = async (id: ID, payload: SchedulePayload) => await axios.post(`${api}/update/schedule/${id}`, payload);

@@ -1,6 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import { Text } from "./styled";
+import { EditField, DetailField } from "./Field";
 import {
   Table, TableRow,
   TableId, TableName,
@@ -74,9 +75,16 @@ export class CourseOverview extends React.Component<any> {
   }
 
   render() {
+    const { id } = this.props.match.params;
     return (
       <OverviewWrapper>
-        <InfoField course={this.props.course} />
+        <InfoField
+          course={this.props.course}
+          updateName={(name: string) => this.props.updateCourseName(id, name)}
+          updateDetail={(detail: string) => this.props.updateCourseDetail(id, detail)}
+          updatePrice={(price: number) => this.props.updateCoursePrice(id, price)}
+          deleteCourse={this.props.deleteCourse}
+        />
         <TeacherField teacher={this.props.course.Teacher} />
         <EnrollTable students={this.props.students} fetchStudents={this.props.fetchStudents} />
       </OverviewWrapper>
@@ -109,9 +117,12 @@ class InfoField extends React.Component<any> {
   render() {
     return (
       <div style={{ gridArea: "basic", borderRight: "1px solid rgba(22,27,72,0.08)" }}>
-        <TableTitle>
+        <TableTitle mb={2}>
           BASIC INFORMATION
         </TableTitle>
+        <EditField type="name" value={this.props.course.name} handleSubmit={this.props.updateName} />
+        <EditField type="price" value={this.props.course.price} handleSubmit={this.props.updatePrice} />
+        <DetailField fetchedValue={this.props.course.detail} handleSubmit={this.props.updateDetail} />
       </div>
     );
   }
