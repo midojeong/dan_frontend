@@ -45,7 +45,7 @@ export const getCourses = async () => {
     const res = await axios.get(`${api}/get`);
     return res.data.result;
   } catch (err) {
-    // TODO
+    return [];
   }
 }
 
@@ -54,7 +54,7 @@ export const getCourse = async (id: ID) => {
     const res = await axios.get(`${api}/${id}`)
     return res.data.result;
   } catch (err) {
-    // TODO
+    return {};
   }
 }
 
@@ -63,7 +63,7 @@ export const getCourseStudents = async (id: ID) => {
     const res = await axios.get(`${api}/get/students/${id}`);
     return res.data.result;
   } catch (err) {
-    // TODO
+    return [];
   }
 }
 
@@ -72,7 +72,7 @@ export const getCourseSchedules = async (id: ID) => {
     const res = await axios.get(`${api}/get/schedules/${id}`);
     return res.data.result;
   } catch (err) {
-    // TODO
+    return [];
   }
 }
 
@@ -82,8 +82,4 @@ export const updateCoursePrice = async (id: ID, payload: { price: number }) => a
 export const updateCourse = async (id: ID, attr: ATTRIBUTE, value: any) => await axios.post(`${api}/update/${attr}/${id}`, { [attr]: value });
 
 export const deleteCourse = async (id: ID) => await axios.delete(`${api}/delete/${id}`);
-export const deleteCourseTeacher = async (id: ID, payload: { teacher: ID }) => await axios({
-  method: "delete",
-  url: `${api}/delete/teacher/${id}`,
-  data: payload
-});
+export const deleteCourseTeacher = async (id: ID) => await axios.delete(`${api}/delete/teacher/${id}`);

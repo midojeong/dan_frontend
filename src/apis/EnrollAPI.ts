@@ -1,16 +1,28 @@
 import axios from "axios";
 import { getAPI } from "./env";
-import { ID } from "./CommonType";
 
 const api = `${getAPI()}/enroll`;
 
-export const enroll = async (payload: { course: ID, student: ID }) => await axios.post(`${api}/create`, payload);
+export const enroll = async (payload: { course, student }) => {
+  try {
+    const res = await axios.post(`${api}/create`, payload);
+    return res.data.result;
+  } catch (error) {
+    // TODO
+    console.log(error);
+    return {};
+  }
+}
 
-export const unenroll = async (payload: { course: ID, student: ID }) => await axios({
-  method: "delete",
-  url: `${api}/delete`,
-  data: payload,
-});
+export const unenroll = async (payload: { course, student }) => {
+  try {
+    const res = await axios({ method: "delete", url: `${api}/delete`, data: payload });
+    return res.data.result;
+  } catch (error) {
+    // TODO
+    return {};
+  }
+}
 
-export const updateEnrollDetail = async (id: ID, payload: { detail: string }) =>
+export const updateEnrollDetail = async (id, payload: { detail: string }) =>
   await axios.post(`${api}/update/detail/${id}`, payload);

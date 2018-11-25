@@ -2,6 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import { EditButton } from "./Icon";
 import { Flex, Text, Box, Input } from "./styled";
+import { Picker } from "./Dialogs";
 
 const EditInput = styled<any>(Input)`
    width: ${props => props.width} !important;
@@ -57,7 +58,7 @@ export class EditField extends React.Component<any> {
   render() {
     return (
       <Flex alignItems="center" ml={3}>
-        <Text fontSize="14px" mr={3}>{this.props.type}</Text>
+        <Text fontSize="14px" mr={3} style={{ minWidth: (this.props.titleWidth || "95px") }}>{this.props.type}</Text>
         {this.state.edit ?
           <>
             <EditInput
@@ -119,10 +120,29 @@ export class DetailField extends React.Component<any> {
       <DetailInput
         width={this.props.width || "70%"}
         height={this.props.height || "150px"}
-        value={this.state.value}
+        value={this.state.value || ""}
         onChange={this.handleChange}
         onBlur={this.handleBlur}
       />
+    );
+  }
+}
+
+export class PickerField extends React.Component<any> {
+
+  render() {
+    return (
+      <Flex alignItems="center" ml={3}>
+        <Text fontSize="14px" mr={3} style={{ minWidth: (this.props.titleWidth || "95px") }}>{this.props.type}</Text>
+        <Text>{this.props.value}</Text>
+        <Picker
+          onClose={this.props.handleSubmit}
+          fetch={this.props.fetch}
+          type={this.props.table}
+          component={(props) =>
+            <EditButton onClick={props.onClick} style={{ color: "rgba(22,27,72,0.3)" }} />
+          } />
+      </Flex>
     );
   }
 }

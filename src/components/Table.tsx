@@ -1,5 +1,7 @@
+import * as React from "react";
 import styled, { css } from "styled-components";
 import { Text, Flex } from "./styled";
+import { DeleteButton } from "./Icon";
 
 export const TableCell = styled<any>(Flex)`
   flex-shrink: 0;
@@ -23,6 +25,9 @@ const hover = css`
 `;
 
 export const Table = styled.div`
+`;
+
+export const TableBody = styled.div<any>`
   &> :nth-child(odd) {
     background: none;
   }
@@ -30,8 +35,8 @@ export const Table = styled.div`
   &> :nth-child(even) {
     background: rgba(22,27,72,0.05);
   }
-
-  height: calc(100% - 32px);
+  overflow: scroll;
+  max-height: ${props => props.maxHeight};
 `;
 
 export const TableRow = styled<any>(Flex)`
@@ -70,6 +75,14 @@ export const TableEntity = styled<any>(TableCell)`
   ${hover}
 `;
 
+export const TableDelete = (props: any) => {
+  return (
+    <Flex alignItems="center" justifyContent="center" style={{ flexShrink: 0 }} width="x">
+      <DeleteButton onClick={props.onClick} />
+    </Flex>
+  );
+};
+
 export const TableRest = styled.div<any>`
   flex: 1;
   height: 100%;
@@ -78,6 +91,7 @@ export const TableRest = styled.div<any>`
   padding: 0 4px 0 4px;
   overflow: hidden;
   white-space: nowrap;
+  border-right: 1px solid rgba(22,27,72, 0.18);
 `;
 
 export const TableMoney = styled<any>(TableCell)`

@@ -1,15 +1,15 @@
 import * as React from "react";
-
-export const Dialog = {};
-/*
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
 import { Flex, Text } from "./styled";
+import DayPicker from "./DayPicker";
 import Select from 'react-select';
 import axios from "axios";
+import Helmet from "react-helmet";
+import moment from "moment";
 
 const Checkbox = props => <input type="checkbox" {...props} />;
 
-class SingleSelect extends React.Component {
+class SingleSelect extends React.Component<any> {
 
   render() {
     const { isLoading, options, onChange, defaultValue } = this.props;
@@ -31,7 +31,7 @@ class SingleSelect extends React.Component {
 }
 
 
-export class Picker extends React.Component {
+export class Picker extends React.Component<any> {
   state = {
     open: false,
     options: [],
@@ -41,8 +41,8 @@ export class Picker extends React.Component {
 
   handleClickOpen = async () => {
     this.setState({ open: true, isLoading: true });
-    const data = await axios.get(`http://localhost:3030/api/v1/${this.props.type}/get?visible=true`);
-    this.setState({ isLoading: false, options: this.compute(data.data.result) });
+    const data = (await this.props.fetch() || []); // TODO 임시 에러 처리
+    this.setState({ isLoading: false, options: this.compute(data) });
   };
 
   compute = arr => {
@@ -96,8 +96,106 @@ export class Picker extends React.Component {
   }
 }
 
+export class TextfieldDialog extends React.Component<any, any> {
+  state = {
+    open: false,
+    value: {},
+  };
 
-export class EditDialog extends React.Component {
+  handleClickOpen = () => {
+    this.setState({ open: true, value: {} });
+  };
+
+  handleClose = () => {
+    this.setState({ open: false });
+  };
+
+  handleSelect = () => {
+    const { value } = this.state;
+
+    // 하나도 입력된 적이 없을 때 에러
+    if (JSON.stringify(value) === "{}") { // TODO 좀더 디테일한 에러 핸들링 필요
+      alert(`Value can't be empty`);
+      return;
+    }
+
+    // 필요한 필드가 다 채워지지 않았을 때
+    if (Object.keys(value).length !== this.props.fields.length) {
+      alert(`Value can't be empty`);
+      return;
+    }
+
+    // 필드별 에러헨들링
+    const fieldsArray = Object.entries(value); // [["price": 1000], [...],]
+    for (const [field, value] of fieldsArray) {
+      const isError = this.props.errorHandler[this.props.fields.indexOf(field)] || (x => true); // undefined일 경우
+
+      if (isError(value)) {
+        alert(`Invalid value at ${field} field`);
+        return;
+      }
+    };
+
+    this.setState({ open: false, value: {} });
+    this.props.onClose(value);
+  };
+
+  handleChange = (key) => (e) => {
+    const { value } = e.target;
+    this.setState(prev => ({
+      ...prev,
+      value: {
+        ...prev.value,
+        [key]: value
+      }
+    })
+    )
+  }
+
+
+  render() {
+    const Opener = this.props.component;
+    return (
+      <>
+        <Opener onClick={this.handleClickOpen} />
+        <Dialog
+          open={this.state.open}
+          onClose={this.handleClose}
+          aria-labelledby="form-dialog-title"
+          PaperProps={{ style: { overflow: "visible" } }} >
+          <DialogTitle id="form-dialog-title">{this.props.title}</DialogTitle>
+          <DialogContent style={{ width: "600px", height: "max-content" }}>
+            {this.props.fields.map((field, i) =>
+              <TextField
+                style={{ marginBottom: "16px" }}
+                key={i}
+                margin="dense"
+                value={this.state.value[field] || ""}
+                label={field}
+                type={this.props.types[i]}
+                placeholder={this.props.placeholders[i]}
+                onChange={this.handleChange(field)}
+                fullWidth />
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleSelect} color="primary">
+              Select
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </>
+    );
+  }
+}
+
+
+
+/*
+export class EditDialog extends React.Component<any> {
   state = {
     open: false,
     value: {},
@@ -209,7 +307,8 @@ const timeOption = [
   { value: 13, label: "6hr 30min" },
   { value: 14, label: "7hr" },
 ];
-export class SchedulePicker extends React.Component {
+
+export class SchedulePicker extends React.Component<any> {
 
   state = {
     open: false,
@@ -287,7 +386,7 @@ export class SchedulePicker extends React.Component {
                 step: 300,
               }}
             />
-            <Col>
+            <Flex flexDirection="column">
               <Text ml={1} mb={1} mt={2}>
                 Duraction
               </Text>
@@ -299,7 +398,7 @@ export class SchedulePicker extends React.Component {
                 menuPosition="fixed"
                 options={timeOption}
               />
-            </Col>
+            </Flex>
             <Helmet>
               <style>{`
                 .DayPicker-wrapper, .DayPicker-Day {
@@ -325,4 +424,5 @@ export class SchedulePicker extends React.Component {
     );
   }
 }
+
 */

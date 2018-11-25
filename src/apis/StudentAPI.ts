@@ -38,6 +38,7 @@ export const getStudents = async () => {
     const res = await axios.get(`${api}/get`);
     return res.data.result;
   } catch (err) {
+    return [];
   }
 }
 
@@ -46,7 +47,7 @@ export const getStudent = async (id: ID) => {
     const res = await axios.get(`${api}/${id}`);
     return res.data.result;
   } catch (err) {
-    // TODO
+    return {}
   }
 }
 

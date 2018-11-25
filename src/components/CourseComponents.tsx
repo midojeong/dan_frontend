@@ -1,17 +1,21 @@
 import * as React from "react";
 import styled from "styled-components";
 import { Text } from "./styled";
-import { EditField, DetailField } from "./Field";
+import { EditField, DetailField, PickerField } from "./Field";
 import {
   Table, TableRow,
   TableId, TableName,
   TableHead, TableCell,
   TableEntity, TableRest,
   TableMoney, TableCreate,
-  TableTitle,
+  TableTitle, TableDelete,
+  TableBody,
 } from "./Table";
 import { Hr } from "./Hr";
 const selectn = require("selectn");
+import { Picker, TextfieldDialog } from "./Dialogs";
+import { getTeachers } from "../apis/TeacherAPI";
+import { getStudents } from "../apis/StudentAPI";
 
 export class CourseTable extends React.Component<any> {
 
@@ -34,23 +38,39 @@ export class CourseTable extends React.Component<any> {
             <TableCell width="150px">TEACHER</TableCell>
             <TableCell width="100px">PRICE</TableCell>
             <TableRest>DETAIL</TableRest>
+            <TableCell width="44px"></TableCell>
           </TableHead>
-          {this.props.courses.map((v: any, i: number) =>
-            <TableRow key={i} current={this.props.location.pathname.split("/")[2] == (selectn("id", v))}>
-              <TableId>{selectn("id", v)}</TableId>
-              <TableName hover cursor="pointer" onClick={this.handleClickCourse(selectn("id", v))}>{selectn("name", v)}</TableName>
-              <TableEntity>{selectn("Teacher.name", v)}</TableEntity>
-              <TableMoney>{selectn("price", v)}</TableMoney>
-              <TableRest>{selectn("detail", v)}</TableRest>
-            </TableRow>
-          )}
+          <TableBody maxHeight="calc(100vh - 64px)">
+            {this.props.courses.map((v: any, i: number) =>
+              <TableRow key={i} current={this.props.location.pathname.split("/")[2] == (selectn("id", v))}>
+                <TableId>{selectn("id", v)}</TableId>
+                <TableName hover cursor="pointer" onClick={this.handleClickCourse(selectn("id", v))}>{selectn("name", v)}</TableName>
+                <TableEntity>{selectn("Teacher.name", v)}</TableEntity>
+                <TableMoney>{selectn("price", v)}</TableMoney>
+                <TableRest>{selectn("detail", v)}</TableRest>
+                <TableDelete />
+              </TableRow>
+            )}
+          </TableBody>
           <Hr />
         </Table>
-        <TableCreate>
-          <Text>
-            + COURSE
-          </Text>
-        </TableCreate>
+        <TextfieldDialog
+          onClose={this.props.createCourse}
+          title="Create new course"
+          fields={["name", "price"]}
+          placeholders={["", "10000"]}
+          errorHandler={[
+            name => (name === ""),
+            price => (price <= 0)
+          ]}
+          types={["text", "number"]}
+          component={(props) =>
+            <TableCreate onClick={props.onClick}>
+              <Text>
+                + COURSE
+              </Text>
+            </TableCreate>
+          } />
       </>
     );
   }
@@ -62,6 +82,7 @@ export class CourseOverview extends React.Component<any> {
     const { id } = this.props.match.params;
     if (id !== "0") {
       this.props.fetchCourse(id);
+      this.props.fetchStudents(id);
     }
   }
 
@@ -83,10 +104,19 @@ export class CourseOverview extends React.Component<any> {
           updateName={(name: string) => this.props.updateCourseName(id, name)}
           updateDetail={(detail: string) => this.props.updateCourseDetail(id, detail)}
           updatePrice={(price: number) => this.props.updateCoursePrice(id, price)}
-          deleteCourse={this.props.deleteCourse}
         />
-        <TeacherField teacher={this.props.course.Teacher} />
-        <EnrollTable students={this.props.students} fetchStudents={this.props.fetchStudents} />
+        <TeacherField
+          course={this.props.course}
+          updateCourseTeacher={(teacherId: any) => this.props.updateCourseTeacher(id, { teacher: teacherId })}
+          overrideTeacher={(key: any, value: any) => this.props.updateCourseAttribute(id, key, value)}
+          deleteCourseTeacher={() => this.props.deleteCourseTeacher(id)}
+        />
+        <EnrollTable
+          history={this.props.history}
+          students={this.props.students}
+          unenrollStudent={(studentId) => this.props.unenrollStudent(id, studentId)}
+          enrollStudent={(studentId) => this.props.enrollStudent(id, studentId)}
+        />
       </OverviewWrapper>
     );
   }
@@ -130,18 +160,45 @@ class InfoField extends React.Component<any> {
 
 class TeacherField extends React.Component<any> {
 
+
+  updateContract = (value) => {
+    this.props.overrideTeacher("contract", parseInt(value));
+  }
+
+  updateContractType = (value) => {
+    this.props.overrideTeacher("contractType", value);
+  }
+
   render() {
     return (
       <div style={{ gridArea: "teacher" }}>
-        <TableTitle>
+        <TableTitle mb={2}>
           TEACHER
         </TableTitle>
+        <PickerField
+          type="name"
+          value={selectn("Teacher.name", this.props.course)}
+          table="teacher"
+          fetch={getTeachers}
+          handleSubmit={this.props.updateCourseTeacher} />
+        <EditField
+          type="contract"
+          value={selectn("contract", this.props.course) || selectn("Teacher.contract", this.props.course)}
+          handleSubmit={this.updateContract} />
+        <EditField
+          type="contract type"
+          value={selectn("contractType", this.props.course) || selectn("Teacher.contractType", this.props.course)}
+          handleSubmit={this.updateContractType} />
       </div>
     );
   }
 }
 
 class EnrollTable extends React.Component<any> {
+
+  handleClickStudent = (id) => () => {
+    this.props.history.push(`/student/${id}/overview`);
+  }
 
   render() {
     return (
@@ -156,22 +213,33 @@ class EnrollTable extends React.Component<any> {
             <TableCell width="100px">DISCOUNT</TableCell>
             <TableCell width="200px">DISCOUNT REASON</TableCell>
             <TableRest>DETAIL</TableRest>
+            <TableCell width="44px"></TableCell>
           </TableHead>
-          {this.props.students.map((v: any, i: any) =>
-            <TableRow key={i}>
-              <TableId>{selectn("id", v)}</TableId>
-              <TableName>{selectn("name", v)}</TableName>
-              <TableMoney>{selectn("discount", v)}</TableMoney>
-              <TableCell width="200px">{selectn("discountReason", v)}</TableCell>
-              <TableRest>{selectn("detail", v)}</TableRest>
-            </TableRow>
-          )}
+          <TableBody maxHeight="calc(100vh - 400px - 96px)">
+            {this.props.students.map((v: any, i: any) =>
+              <TableRow key={i}>
+                <TableId>{selectn("id", v)}</TableId>
+                <TableName hover cursor="pointer" onClick={this.handleClickStudent(selectn("id", v))}>{selectn("name", v)}</TableName>
+                <TableMoney>{selectn("discount", v)}</TableMoney>
+                <TableCell width="200px">{selectn("discountReason", v)}</TableCell>
+                <TableRest>{selectn("detail", v)}</TableRest>
+                <TableDelete onClick={() => this.props.unenrollStudent(selectn("id", v))} />
+              </TableRow>
+            )}
+          </TableBody>
+          <Hr />
         </Table>
-        <TableCreate>
-          <Text>
-            + ADD STUDENT
-          </Text>
-        </TableCreate>
+        <Picker
+          onClose={this.props.enrollStudent}
+          fetch={getStudents}
+          type="student"
+          component={(props) =>
+            <TableCreate onClick={props.onClick}>
+              <Text>
+                + ADD STUDENT
+              </Text>
+            </TableCreate>
+          } />
       </div>
     );
   }
