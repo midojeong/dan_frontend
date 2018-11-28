@@ -91,4 +91,11 @@ export const getStudentExtramoney = async (id: ID) => {
 export const updateStudent = async (id: ID, attr: ATTRIBUTE, value: any) => await axios.post(`${api}/update/${attr}/${id}`, { [attr]: value });
 
 // D
-export const deleteStudent = async (id: ID) => await axios.delete(`${api}/delete/${id}`);
+export const deleteStudent = async (id: ID) => {
+  try {
+    const res = await axios.delete(`${api}/delete/${id}`);
+    return res.data.result;
+  } catch (error) {
+    // TODO
+  }
+}

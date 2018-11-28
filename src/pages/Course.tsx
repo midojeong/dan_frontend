@@ -12,6 +12,7 @@ import {
   getCourse,
   getCourses,
   getCourseStudents,
+  getCourseSchedules,
 
   updateCourse,
   updateCoursePrice,
@@ -32,6 +33,13 @@ export class CoursePage extends React.Component<any> {
     courses: [],
     course: {},
     students: [],
+    schedules: [],
+  }
+
+  createCourse = async (payload) => {
+    const data = await createCourse(payload);
+    await this.fetchCourses();
+    this.props.history.push(`/course/${data.id}/overview`);
   }
 
   fetchCourses = async () => {
@@ -49,10 +57,9 @@ export class CoursePage extends React.Component<any> {
     this.setState({ students: data });
   }
 
-  createCourse = async (payload) => {
-    const data = await createCourse(payload);
-    await this.fetchCourses();
-    this.props.history.push(`/course/${data.id}/overview`);
+  fetchSchedules = async (id: any) => {
+    const data = await getCourseSchedules(id);
+    this.setState({ schedules: data });
   }
 
   enrollStudent = async (id: any, studentId: any) => {
@@ -92,12 +99,17 @@ export class CoursePage extends React.Component<any> {
     this.fetchCourse(id);
   }
 
+  updateCourseSchedules = async () => {
+  }
+
   deleteCourseTeacher = async (id: any) => {
     await deleteCourseTeacher(id);
     this.fetchCourse(id);
   }
 
-  deleteCourse = () => {
+  deleteCourse = async (id: any) => {
+    await deleteCourse(id);
+    await this.fetchCourses();
   }
 
   componentDidMount() {
@@ -140,7 +152,14 @@ export class CoursePage extends React.Component<any> {
               deleteCourseTeacher={this.deleteCourseTeacher}
             />}
           />
-          <Route path="/course/:id/schedules" component={CourseSchedule} />
+          <Route path="/course/:id/schedules"
+            render={(props: any) => <CourseSchedule
+              {...props}
+              schedules={this.state.schedules}
+              fetchSchedules={this.fetchSchedules}
+              updateSchedules={this.updateCourseSchedules}
+            />}
+          />
         </Main>
       </>
     );

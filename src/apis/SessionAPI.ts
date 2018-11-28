@@ -16,8 +16,22 @@ type BulkDiscountPayload = {
   discountReason?: string;
 }
 
-export const getSessions = async () => await axios.get(`${api}/get`);
-export const getSession = async (id: ID) => await axios.get(`${api}/${id}`);
+export const getSessions = async () => {
+  try {
+    const res = await axios.get(`${api}/get`);
+    return res.data.result;
+  } catch (error) {
+    return [];
+  }
+}
+export const getSession = async (id: ID) => {
+  try {
+    const res = await axios.get(`${api}/${id}`);
+    return res.data.result;
+  } catch (error) {
+    return {};
+  }
+}
 
 export const updateSessionActive = async (id: ID, payload: { active: boolean }) => await axios.post(`${api}/update/active/${id}`, payload);
 export const updateSessionDiscount = async (id: ID, payload: DiscountPayload) => await axios.post(`${api}/update/discount/${id}`, payload);

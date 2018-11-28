@@ -30,6 +30,12 @@ export class StudentPage extends React.Component<any> {
     extramoeny: [],
   }
 
+  createStudent = async (payload) => {
+    const data = await createStudent({ ...payload, discount: 0, discountReason: "--", age: 15, phone: "010-0000-0000" });
+    await this.fetchStudents();
+    this.props.history.push(`/student/${data.id}/overview`);
+  }
+
   fetchStudents = async () => {
     const data = (await getStudents() || []); // TODO 더 나은 에러처리
     this.setState({ students: data });
@@ -71,10 +77,9 @@ export class StudentPage extends React.Component<any> {
     this.fetchStudent(id);
   }
 
-  createStudent = async (payload) => {
-    const data = await createStudent(payload);
+  deleteStudent = async (id: any) => {
+    await deleteStudent(id);
     await this.fetchStudents();
-    this.props.history.push(`/student/${data.id}/overview`);
   }
 
 
@@ -83,6 +88,7 @@ export class StudentPage extends React.Component<any> {
   }
 
   render() {
+    console.log(this.state.courses);
     return (
       <>
         <List>
@@ -90,7 +96,8 @@ export class StudentPage extends React.Component<any> {
             {...this.props}
             students={this.state.students}
             fetchStudents={this.fetchStudents}
-            createStudent={createStudent} />
+            deleteStudent={this.deleteStudent}
+            createStudent={this.createStudent} />
         </List>
         <Main>
           <Route path="/student/:id/overview"

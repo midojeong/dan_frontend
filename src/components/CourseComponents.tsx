@@ -48,7 +48,7 @@ export class CourseTable extends React.Component<any> {
                 <TableEntity>{selectn("Teacher.name", v)}</TableEntity>
                 <TableMoney>{selectn("price", v)}</TableMoney>
                 <TableRest>{selectn("detail", v)}</TableRest>
-                <TableDelete />
+                <TableDelete onClick={() => this.props.deleteCourse(selectn("id", v))} />
               </TableRow>
             )}
           </TableBody>
@@ -123,6 +123,8 @@ export class CourseOverview extends React.Component<any> {
 }
 
 export class CourseSchedule extends React.Component {
+
+
 
   render() {
     return (
@@ -210,19 +212,21 @@ class EnrollTable extends React.Component<any> {
           <TableHead>
             <TableCell width="50px">ID</TableCell>
             <TableCell width="250px">NAME</TableCell>
+            <TableCell width="100px">AGE</TableCell>
+            <TableCell width="200px">PHONE</TableCell>
             <TableCell width="100px">DISCOUNT</TableCell>
-            <TableCell width="200px">DISCOUNT REASON</TableCell>
-            <TableRest>DETAIL</TableRest>
+            <TableRest>DISCOUNT REASON</TableRest>
             <TableCell width="44px"></TableCell>
           </TableHead>
           <TableBody maxHeight="calc(100vh - 400px - 96px)">
             {this.props.students.map((v: any, i: any) =>
               <TableRow key={i}>
                 <TableId>{selectn("id", v)}</TableId>
-                <TableName hover cursor="pointer" onClick={this.handleClickStudent(selectn("id", v))}>{selectn("name", v)}</TableName>
+                <TableName cursor="pointer" hover onClick={this.handleClickStudent(selectn("id", v))}>{selectn("name", v)}</TableName>
+                <TableMoney>{selectn("age", v)}</TableMoney>
+                <TableCell width="200px">{selectn("phone", v)}</TableCell>
                 <TableMoney>{selectn("discount", v)}</TableMoney>
-                <TableCell width="200px">{selectn("discountReason", v)}</TableCell>
-                <TableRest>{selectn("detail", v)}</TableRest>
+                <TableRest>{selectn("discountReason", v)}</TableRest>
                 <TableDelete onClick={() => this.props.unenrollStudent(selectn("id", v))} />
               </TableRow>
             )}

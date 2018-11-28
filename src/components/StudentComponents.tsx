@@ -13,6 +13,7 @@ import {
 import { Hr } from "./Hr";
 const selectn = require("selectn");
 import { Flex } from "./styled";
+import { TextfieldDialog } from "./Dialogs";
 import { EditField, DetailField } from "./Field";
 
 export class StudentTable extends React.Component<any> {
@@ -33,28 +34,43 @@ export class StudentTable extends React.Component<any> {
           <TableHead>
             <TableCell width="50px">ID</TableCell>
             <TableCell width="250px">NAME</TableCell>
+            <TableCell width="100px">AGE</TableCell>
+            <TableCell width="200px">PHONE</TableCell>
             <TableCell width="100px">DISCOUNT</TableCell>
-            <TableCell width="200px">DISCOUNT REASON</TableCell>
-            <TableRest>DETAIL</TableRest>
+            <TableRest>DISCOUNT REASON</TableRest>
+            <TableCell width="44px"></TableCell>
           </TableHead>
           <TableBody maxHeight="calc(100vh - 64px)">
             {this.props.students.map((v: any, i: number) =>
               <TableRow key={i} current={this.props.location.pathname.split("/")[2] == (selectn("id", v))}>
                 <TableId>{selectn("id", v)}</TableId>
                 <TableName hover cursor="pointer" onClick={this.handleClickStudent(selectn("id", v))}>{selectn("name", v)}</TableName>
+                <TableMoney>{selectn("age", v)}</TableMoney>
+                <TableCell width="200px">{selectn("phone", v)}</TableCell>
                 <TableMoney>{selectn("discount", v)}</TableMoney>
-                <TableCell width="200px">{selectn("discountReason", v)}</TableCell>
-                <TableRest>{selectn("detail", v)}</TableRest>
+                <TableRest>{selectn("discountReason", v)}</TableRest>
+                <TableDelete onClick={() => this.props.deleteStudent(selectn("id", v))} />
               </TableRow>
             )}
           </TableBody>
           <Hr />
         </Table>
-        <TableCreate>
-          <Text>
-            + STUDENT
-          </Text>
-        </TableCreate>
+        <TextfieldDialog
+          onClose={this.props.createStudent}
+          title="Create new student"
+          fields={["name"]}
+          placeholders={[""]}
+          errorHandler={[
+            name => (name === ""),
+          ]}
+          types={["text"]}
+          component={(props) =>
+            <TableCreate onClick={props.onClick}>
+              <Text>
+                + STUDENT
+              </Text>
+            </TableCreate>
+          } />
       </>
     );
   }
@@ -66,6 +82,7 @@ export class StudentOverview extends React.Component<any> {
     const { id } = this.props.match.params;
     if (id !== "0") {
       this.props.fetchStudent(id);
+      this.props.fetchCourses(id);
     }
   }
 
@@ -74,6 +91,7 @@ export class StudentOverview extends React.Component<any> {
     const { id: nextid } = next.match.params;
     if (id !== nextid) {
       this.props.fetchStudent(nextid);
+      this.props.fetchCourses(nextid);
       this.props.fetchStudents(nextid);
     }
   }
@@ -91,7 +109,10 @@ export class StudentOverview extends React.Component<any> {
           updateDiscount={(discount) => this.props.updateStudentAttribute(id, "discount", discount)}
           updateDiscountReason={(discountReason) => this.props.updateStudentAttribute(id, "discountReason", discountReason)}
         />
-        <EnrollTable />
+        <EnrollTable
+          history={this.props.history}
+          courses={this.props.courses}
+        />
       </OverviewWrapper>
     );
   }
@@ -110,7 +131,6 @@ const OverviewWrapper = styled.div`
 class InfoField extends React.Component<any> {
 
   render() {
-    console.log(this.props.student);
     return (
       <div style={{ gridArea: "basic" }}>
         <TableTitle mb={2}>
@@ -136,9 +156,9 @@ class InfoField extends React.Component<any> {
 
 class EnrollTable extends React.Component<any> {
 
-  /* handleClickStudent = (id) => () => {
-   *   this.props.history.push(`/student/${id}/overview`);
-   * } */
+  handleClickCourse = (id) => () => {
+    this.props.history.push(`/course/${id}/overview`);
+  }
 
   render() {
     return (
@@ -147,34 +167,27 @@ class EnrollTable extends React.Component<any> {
           <TableTitle>
             COURSES
           </TableTitle>
+          <TableHead>
+            <TableCell width="50px">ID</TableCell>
+            <TableCell width="250px">NAME</TableCell>
+            <TableCell width="100px">PRICE</TableCell>
+            <TableRest>DETAIL</TableRest>
+          </TableHead>
+          <TableBody maxHeight="calc(100vh - 400px - 96px)">
+            {this.props.courses.map((v: any, i: any) =>
+              <TableRow key={i}>
+                <TableId>{selectn("Course.id", v)}</TableId>
+                <TableName cursor="pointer" hover onClick={this.handleClickCourse(selectn("Course.id", v))}>
+                  {selectn("Course.name", v)}
+                </TableName>
+                <TableMoney>{selectn("Course.price", v)}</TableMoney>
+                <TableRest>{selectn("Course.detail", v)}</TableRest>
+              </TableRow>
+            )}
+          </TableBody>
+          <Hr />
         </Table>
       </div>
     );
   }
 }
-/* <Table>
- *   <TableTitle>
- *     STUDENTS
- *   </TableTitle>
- *   <TableHead>
- *     <TableCell width="50px">ID</TableCell>
- *     <TableCell width="250px">NAME</TableCell>
- *     <TableCell width="100px">DISCOUNT</TableCell>
- *     <TableCell width="200px">DISCOUNT REASON</TableCell>
- *     <TableRest>DETAIL</TableRest>
- *     <TableCell width="44px"></TableCell>
- *   </TableHead>
- *   <TableBody maxHeight="calc(100vh - 400px - 96px)">
- *     {this.props.students.map((v: any, i: any) =>
- *       <TableRow key={i}>
- *         <TableId>{selectn("id", v)}</TableId>
- *         <TableName hover cursor="pointer" onClick={this.handleClickStudent(selectn("id", v))}>{selectn("name", v)}</TableName>
- *         <TableMoney>{selectn("discount", v)}</TableMoney>
- *         <TableCell width="200px">{selectn("discountReason", v)}</TableCell>
- *         <TableRest>{selectn("detail", v)}</TableRest>
- *         <TableDelete onClick={() => this.props.unenrollStudent(selectn("id", v))} />
- *       </TableRow>
- *     )}
- *   </TableBody>
- *   <Hr />
- * </Table> */

@@ -70,7 +70,7 @@ export const getCourseStudents = async (id: ID) => {
 export const getCourseSchedules = async (id: ID) => {
   try {
     const res = await axios.get(`${api}/get/schedules/${id}`);
-    return res.data.result;
+    return (res.data.result || []);  // TODO
   } catch (err) {
     return [];
   }
@@ -81,5 +81,19 @@ export const updateCourseSchedule = async (id: ID, payload: SchedulePayload) => 
 export const updateCoursePrice = async (id: ID, payload: { price: number }) => await axios.post(`${api}/update/price/${id}`, payload);
 export const updateCourse = async (id: ID, attr: ATTRIBUTE, value: any) => await axios.post(`${api}/update/${attr}/${id}`, { [attr]: value });
 
-export const deleteCourse = async (id: ID) => await axios.delete(`${api}/delete/${id}`);
-export const deleteCourseTeacher = async (id: ID) => await axios.delete(`${api}/delete/teacher/${id}`);
+export const deleteCourse = async (id: ID) => {
+  try {
+    const res = await axios.delete(`${api}/delete/${id}`);
+    return res.data.result;
+  } catch (error) {
+    return {};
+  }
+}
+export const deleteCourseTeacher = async (id: ID) => {
+  try {
+    const res = await axios.delete(`${api}/delete/teacher/${id}`);
+    return res.data.result;
+  } catch (error) {
+    return {};
+  }
+}

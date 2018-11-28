@@ -2,11 +2,6 @@
 
 ## TODO List
 
-- Student > Overview > Basic Information 탭 추가
-- Student > List > Create Student 추가
-- Student > Overview > Course 테이블 추가(뷰테이블, 링크만 걸려있음)
-- Teacher > List 추가, Create Teacher 추가
-- Teacher > Overview > Basic Information 탭 추가
 - Teacher > Course 테이블 추가(뷰테이블, 링크만 걸려있음)
 - Course > Schedule 추가
 - Course > Schedule CRUD API 추가
@@ -18,7 +13,15 @@
 - Invoice > List > Detail 추가
 ...
 
+## DOING List
+...
 
 ## DONE List
+- Student > List > Create Student 추가
+- Student > Overview > Course 테이블 추가(뷰테이블, 링크만 걸려있음)
+- Teacher > List 추가, Create Teacher 추가
+- Teacher > Overview > Basic Information 탭 추가
+- Student > Overview > Basic Information 탭 추가
+- Student > Delete 추가
 
 ...
