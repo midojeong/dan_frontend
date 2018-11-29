@@ -37,6 +37,7 @@ export const TableBody = styled.div<any>`
   }
   overflow: scroll;
   max-height: ${props => props.maxHeight};
+  height: ${props => props.height};
 `;
 
 export const TableRow = styled<any>(Flex)`

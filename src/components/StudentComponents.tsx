@@ -191,3 +191,160 @@ class EnrollTable extends React.Component<any> {
     );
   }
 }
+
+const InvoiceWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 400px 1fr;
+  grid-template-areas:
+  "table basic"
+    "table course";
+`;
+
+export class StudentInvoice extends React.Component {
+
+  render() {
+    return (
+      <InvoiceWrapper>
+
+      </InvoiceWrapper>
+    );
+  }
+}
+
+const PaymentWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 400px;
+  grid-template-areas:
+    "invoice edit"
+    "session edit"
+    "extra edit";
+`;
+
+export class StudentPayment extends React.Component {
+
+  render() {
+    return (
+      <PaymentWrapper>
+        <InvoiceTable />
+        <SessionTable />
+        <ExtraTable />
+        <Edit />
+      </PaymentWrapper>
+    );
+  }
+}
+
+class InvoiceTable extends React.Component {
+
+  render() {
+    return (
+      <div style={{ gridArea: "invoice" }}>
+        <Table>
+          <TableTitle>
+            INVOICE (not published only)
+          </TableTitle>
+          <TableHead>
+            <TableCell width="50px">ID</TableCell>
+            <TableCell width="100px">AMOUNT</TableCell>
+            <TableCell width="100px">CARD</TableCell>
+            <TableCell width="100px">CASH</TableCell>
+            <TableCell width="100px">TRANSFER</TableCell>
+            <TableRest>DETAIL</TableRest>
+            <TableCell width="80px" bg="rgb(196, 212, 255)">PUBLISH</TableCell>
+            <TableCell width="44px"></TableCell>
+          </TableHead>
+        </Table>
+      </div>
+    );
+  }
+}
+
+class SessionTable extends React.Component {
+
+  render() {
+    return (
+      <div style={{ gridArea: "session" }}>
+        <Table>
+          <TableTitle>
+            SESSIONS (need to be paid or refunded only)
+          </TableTitle>
+          <TableHead>
+            <TableCell width="44px" bg="rgb(196, 212, 255)"></TableCell>
+            <TableCell width="50px">ID</TableCell>
+            <TableCell width="150px">CHARGED</TableCell>
+            <TableCell width="120px">NET</TableCell>
+            <TableCell width="120px">PAID</TableCell>
+            <TableCell width="150px">COURSE</TableCell>
+            <TableCell width="50px">AT</TableCell>
+            <TableCell width="50px">D/C</TableCell>
+            <TableRest>D/C REASON</TableRest>
+          </TableHead>
+        </Table>
+      </div>
+    );
+  }
+}
+
+class ExtraTable extends React.Component {
+
+  render() {
+    return (
+      <div style={{ gridArea: "extra" }}>
+        <Table>
+          <TableTitle>
+            EXTRAS
+          </TableTitle>
+        </Table>
+        <TableHead>
+          <TableCell width="44px" bg="rgb(196, 212, 255)"></TableCell>
+          <TableCell width="50px">ID</TableCell>
+          <TableCell width="150px">AMOUNT</TableCell>
+          <TableRest>DETAIL</TableRest>
+          <TableCell width="44px"></TableCell>
+        </TableHead>
+      </div>
+    );
+  }
+}
+
+class Edit extends React.Component {
+
+  render() {
+    return (
+      <>
+        <div style={{ gridArea: "edit", borderLeft: "1px solid rgba(22,27,72,0.1)" }}>
+          <Table>
+            <TableTitle>
+              CREATE INVOICE
+            </TableTitle>
+            <TableHead>
+              <TableCell width="50px">ID</TableCell>
+              <TableCell width="120px">AMOUNT</TableCell>
+              <TableRest>DETAIL</TableRest>
+              <TableCell width="44px"></TableCell>
+            </TableHead>
+            <TableBody height="calc(100vh - 128px)">
+
+            </TableBody>
+            <TableRow>
+              <Flex style={{ flexGrow: 1 }}>
+                <Text ml="8px" medium>Total</Text>
+                <Text ml="auto" mr="8px" medium>₩ 0</Text>
+              </Flex>
+            </TableRow>
+            <TableCreate>
+              <Text>
+                + INVOICE
+              </Text>
+            </TableCreate>
+          </Table>
+        </div>
+      </>
+    );
+  }
+}

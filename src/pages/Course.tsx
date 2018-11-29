@@ -23,6 +23,9 @@ import {
   deleteCourseTeacher,
 } from "../apis/CourseAPI";
 import {
+  getScheduleSessions,
+} from "../apis/ScheduleAPI";
+import {
   enroll,
   unenroll,
 } from "../apis/EnrollAPI";
@@ -30,10 +33,12 @@ import {
 export class CoursePage extends React.Component<any> {
 
   state = {
-    courses: [],
     course: {},
+    courses: [],
     students: [],
+    schedule: {},
     schedules: [],
+    sessions: [],
   }
 
   createCourse = async (payload) => {
@@ -60,6 +65,9 @@ export class CoursePage extends React.Component<any> {
   fetchSchedules = async (id: any) => {
     const data = await getCourseSchedules(id);
     this.setState({ schedules: data });
+  }
+
+  fetchSessions = async (id: any) => {
   }
 
   enrollStudent = async (id: any, studentId: any) => {
@@ -100,6 +108,9 @@ export class CoursePage extends React.Component<any> {
   }
 
   updateCourseSchedules = async () => {
+  }
+
+  updateAttendance = async (id: any, attendance: number) => {
   }
 
   deleteCourseTeacher = async (id: any) => {
@@ -153,12 +164,18 @@ export class CoursePage extends React.Component<any> {
             />}
           />
           <Route path="/course/:id/schedules"
-            render={(props: any) => <CourseSchedule
-              {...props}
-              schedules={this.state.schedules}
-              fetchSchedules={this.fetchSchedules}
-              updateSchedules={this.updateCourseSchedules}
-            />}
+            render={(props: any) =>
+              <CourseSchedule
+                {...props}
+                schedule={this.state.schedule}
+                schedules={this.state.schedules}
+                sessions={this.state.sessions}
+                fetchSchedules={this.fetchSchedules}
+                fetchSessions={this.fetchSessions}
+                updateAttendance={this.updateAttendance}
+                updateSchedules={this.updateCourseSchedules}
+              />
+            }
           />
         </Main>
       </>

@@ -122,17 +122,6 @@ export class CourseOverview extends React.Component<any> {
   }
 }
 
-export class CourseSchedule extends React.Component {
-
-
-
-  render() {
-    return (
-      <div>Schedule</div>
-    );
-  }
-}
-
 const OverviewWrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -244,6 +233,84 @@ class EnrollTable extends React.Component<any> {
               </Text>
             </TableCreate>
           } />
+      </div>
+    );
+  }
+}
+
+const ScheduleWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 400px 1fr;
+  grid-template-areas:
+    "schedule basic"
+    "schedule session";
+`;
+
+export class CourseSchedule extends React.Component {
+
+  render() {
+    return (
+      <ScheduleWrapper>
+        <ScheduleTable />
+        <ScheduleOverview />
+        <ScheduleSessions />
+      </ScheduleWrapper>
+    );
+  }
+}
+
+class ScheduleTable extends React.Component {
+
+  render() {
+    return (
+      <div style={{ gridArea: "schedule", borderRight: "1px solid rgba(22,27,72,0.1)" }}>
+        <TableTitle>
+          SCHEDULES
+        </TableTitle>
+        <TableHead>
+          <TableCell width="250px">DATE</TableCell>
+          <TableCell width="100px">TIME</TableCell>
+          <TableCell width="200px">DURATION</TableCell>
+          <TableRest>DETAIL</TableRest>
+          <TableCell width="44px"></TableCell>
+        </TableHead>
+      </div>
+    );
+  }
+}
+
+class ScheduleOverview extends React.Component {
+
+  render() {
+    return (
+      <div style={{ gridArea: "basic" }}>
+        <TableTitle>
+          BASIC
+        </TableTitle>
+      </div>
+    );
+  }
+}
+
+
+class ScheduleSessions extends React.Component {
+
+  render() {
+    return (
+      <div style={{ gridArea: "session" }}>
+        <TableTitle>
+          STUDENTS
+        </TableTitle>
+        <TableHead>
+          <TableCell width="50px">ID</TableCell>
+          <TableCell width="200px">NAME</TableCell>
+          <TableCell width="120px">ATTENDANCE</TableCell>
+          <TableCell width="100px">DISCOUNT</TableCell>
+          <TableRest>DC REASON</TableRest>
+        </TableHead>
       </div>
     );
   }

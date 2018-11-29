@@ -17,6 +17,8 @@ import {
 import {
   StudentTable,
   StudentOverview,
+  StudentInvoice,
+  StudentPayment,
 } from "../components/StudentComponents";
 
 export class StudentPage extends React.Component<any> {
@@ -88,7 +90,6 @@ export class StudentPage extends React.Component<any> {
   }
 
   render() {
-    console.log(this.state.courses);
     return (
       <>
         <List>
@@ -110,8 +111,13 @@ export class StudentPage extends React.Component<any> {
               fetchCourses={this.fetchCourses}
               updateStudentName={this.updateStudentName}
               updateStudentAttribute={this.updateStudentAttribute}
-            />}
-          />
+            />} />
+          <Route path="/student/:id/invoice"
+            render={(props: any) => <StudentInvoice
+            />} />
+          <Route path="/student/:id/payment"
+            render={(props: any) => <StudentPayment
+            />} />
         </Main>
       </>
     );

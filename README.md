@@ -3,8 +3,6 @@
 ## TODO List
 
 - Teacher > Course 테이블 추가(뷰테이블, 링크만 걸려있음)
-- Course > Schedule 추가
-- Course > Schedule CRUD API 추가
 - Student > Payment > 세션 테이블 Need to be paid, Need to be refund 추가
 - Student > Payment > Extramoney 테이블 및 Create Extra 추가
 - Student > Payment > Extramoney + Sessions로 Create New Invoice 추가(Payment 및 Reason)
@@ -14,6 +12,8 @@
 ...
 
 ## DOING List
+- Course > Schedule 추가
+- Course > Schedule CRUD API 추가
 ...
 
 ## DONE List

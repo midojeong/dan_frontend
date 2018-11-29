@@ -23,7 +23,7 @@ export const getSchedule = async (id: ID) => {
 export const getScheduleSessions = async (id: ID) => {
   try {
     const res = await axios.get(`${api}/get/sessions/${id}`);
-    return res.data.result;
+    return (res.data.result || []); // TOOD
   } catch (error) {
     return [];
   }
