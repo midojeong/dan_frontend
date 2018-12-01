@@ -16,6 +16,8 @@ const selectn = require("selectn");
 import { Picker, TextfieldDialog } from "./Dialogs";
 import { getTeachers } from "../apis/TeacherAPI";
 import { getStudents } from "../apis/StudentAPI";
+import { Schedule } from "../models/Schedule";
+import { Session } from "../models/Session";
 
 export class CourseTable extends React.Component<any> {
 
@@ -249,9 +251,34 @@ const ScheduleWrapper = styled.div`
     "schedule session";
 `;
 
-export class CourseSchedule extends React.Component {
+interface ScheduleProps {
+  history: any;
+  location: any;
+  match: any;
+  schedule: Schedule;
+  schedules: Schedule[];
+  sessions: Session[];
+  fetchSchedule: (id: any) => any;
+  fetchSchedules: (id: any) => any;
+  fetchSessions: () => any;
+  updateSchedule: () => any;
+  updateSessionDetail: () => any;
+  updateAttendance: () => any;
+  updateSessionDiscounnt: () => any;
+}
+
+export class CourseSchedule extends React.Component<ScheduleProps> {
+
+  componentDidMount() {
+    const { courseId } = this.props.match.params;
+    const { scheduleId } = this.props.match.params;
+    this.props.fetchSchedules(courseId);
+    if (scheduleId !== "list") this.props.fetchSchedule(scheduleId);
+  }
+
 
   render() {
+    console.log(this.props);
     return (
       <ScheduleWrapper>
         <ScheduleTable />
@@ -277,6 +304,14 @@ class ScheduleTable extends React.Component {
           <TableRest>DETAIL</TableRest>
           <TableCell width="44px"></TableCell>
         </TableHead>
+        <TableBody>
+
+        </TableBody>
+        <TableCreate>
+          <Text>
+            + SCHEDULE
+          </Text>
+        </TableCreate>
       </div>
     );
   }

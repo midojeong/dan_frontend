@@ -114,7 +114,7 @@ export class Layout extends React.Component<any, any> {
           current={routeTest(pathname, /^\/course\/\d+\/schedules/)}
           onClick={() => {
             if (routeTest(pathname, /^\/course\/\d+/)) {
-              goto(pathname.replace(/\/course\/(\d+).*/, "/course/$1/schedules"));
+              goto(pathname.replace(/\/course\/(\d+).*/, "/course/$1/schedules/list"));
             } else {
               goto("/course/0/schedules");
             }

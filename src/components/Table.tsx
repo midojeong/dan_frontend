@@ -38,6 +38,10 @@ export const TableBody = styled.div<any>`
   overflow: scroll;
   max-height: ${props => props.maxHeight};
   height: ${props => props.height};
+
+  ::-webkit-scrollbar {
+      display: none;  // Safari and Chrome
+  }
 `;
 
 export const TableRow = styled<any>(Flex)`

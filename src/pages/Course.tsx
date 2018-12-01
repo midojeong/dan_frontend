@@ -23,12 +23,19 @@ import {
   deleteCourseTeacher,
 } from "../apis/CourseAPI";
 import {
+  getSchedule,
   getScheduleSessions,
 } from "../apis/ScheduleAPI";
 import {
   enroll,
   unenroll,
 } from "../apis/EnrollAPI";
+import {
+  updateSessionAttendance,
+  updateSessionDiscount,
+  updateSessionActive,
+  updateSession,
+} from "../apis/SessionAPI";
 
 export class CoursePage extends React.Component<any> {
 
@@ -67,7 +74,14 @@ export class CoursePage extends React.Component<any> {
     this.setState({ schedules: data });
   }
 
+  fetchSchedule = async (id: any) => {
+    const data = await getSchedule(id);
+    this.setState({ schedule: data });
+  }
+
   fetchSessions = async (id: any) => {
+    const data = await getScheduleSessions(id);
+    this.setState({ sessions: data });
   }
 
   enrollStudent = async (id: any, studentId: any) => {
@@ -107,10 +121,23 @@ export class CoursePage extends React.Component<any> {
     this.fetchCourse(id);
   }
 
-  updateCourseSchedules = async () => {
+  updateCourseSchedule = async () => {
+
   }
 
-  updateAttendance = async (id: any, attendance: number) => {
+  updateAttendance = async (scheduleId: any, sessionId: any, attendance: number) => {
+    await updateSessionAttendance(sessionId, { attendance });
+    this.fetchSessions(scheduleId);
+  }
+
+  updateSessionDiscount = async (scheduleId: any, sessionId: any, discount: number) => {
+    await updateSessionDiscount(sessionId, { discount });
+    this.fetchSessions(scheduleId);
+  }
+
+  updateSessionDetail = async (scheduleId: any, sessionId: any, detail: string) => {
+    await updateSession(sessionId, "detail", detail);
+    this.fetchSessions(scheduleId);
   }
 
   deleteCourseTeacher = async (id: any) => {
@@ -163,17 +190,20 @@ export class CoursePage extends React.Component<any> {
               deleteCourseTeacher={this.deleteCourseTeacher}
             />}
           />
-          <Route path="/course/:id/schedules"
+          <Route path="/course/:courseId/schedules/:scheduleId"
             render={(props: any) =>
               <CourseSchedule
                 {...props}
                 schedule={this.state.schedule}
                 schedules={this.state.schedules}
                 sessions={this.state.sessions}
+                fetchSchedule={this.fetchSchedule}
                 fetchSchedules={this.fetchSchedules}
                 fetchSessions={this.fetchSessions}
+                updateSchedule={this.updateCourseSchedule}
+                updateSessionDetail={this.updateSessionDetail}
                 updateAttendance={this.updateAttendance}
-                updateSchedules={this.updateCourseSchedules}
+                updateSessionDiscount={this.updateSessionDiscount}
               />
             }
           />
