@@ -192,105 +192,6 @@ export class TextfieldDialog extends React.Component<any, any> {
   }
 }
 
-
-
-/*
-export class EditDialog extends React.Component<any> {
-  state = {
-    open: false,
-    value: {},
-  };
-
-  handleClickOpen = () => {
-    const { data } = this.props;
-    this.setState({ open: true });
-    this.setState({
-      value: {
-        ...data.reduce((acc, n) => ({ ...acc, [n.field]: n.value }), {})
-      }
-    });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  handleSelect = () => {
-    const { value } = this.state;
-    this.setState({ open: false, value: -1 });
-    this.props.onClose(value);
-  }
-
-  handleChange = (type) => e => {
-    this.setState(prev => ({
-      ...prev,
-      value: {
-        ...prev.value,
-        [type]: e.value
-      }
-    }));
-  }
-
-  handleChangeTextField = (type) => e => {
-    e.persist();
-    this.setState(prev => ({
-      ...prev,
-      value: {
-        ...prev.value,
-        [type]: e.target.value,
-      }
-    }));
-  }
-
-  render() {
-    const Opener = this.props.component;
-    const { data } = this.props;
-    return (
-      <>
-        <Opener onClick={this.handleClickOpen} />
-        <Dialog
-          open={this.state.open}
-          onClose={this.handleClose}
-          aria-labelledby="form-dialog-title"
-          PaperProps={{ style: { overflow: "visible" } }} >
-          <DialogTitle id="form-dialog-title">{this.props.type}</DialogTitle>
-          <DialogContent style={{ width: "600px", height: "max-content" }}>
-            {data.map((s) => {
-              return s.type === "selector" ?
-                <SingleSelect
-                  style={{ marginBottom: "16px", zIndex: 9000 }}
-                  key={s.field}
-                  name={s.field}
-                  options={s.options}
-                  defaultValue={s.value}
-                  onChange={this.handleChange(s.field)}
-                />
-                : s.type === "input" ?
-                  <TextField
-                    style={{ marginBottom: "16px" }}
-                    key={s.field}
-                    variant="outlined"
-                    margin="dense"
-                    label={s.field}
-                    onChange={this.handleChangeTextField(s.field)}
-                    fullWidth />
-                  : null;
-            })}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={this.handleSelect} color="primary">
-              Select
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </>
-    );
-  }
-}
-
 const timeOption = [
   { value: 1, label: "30min" },
   { value: 2, label: "1hr" },
@@ -307,6 +208,131 @@ const timeOption = [
   { value: 13, label: "6hr 30min" },
   { value: 14, label: "7hr" },
 ];
+
+export class DatePicker extends React.Component<any, any> {
+
+  state = {
+    open: false,
+    value: null,
+    startTime: "16:30",
+    duration: 4,
+  };
+
+  handleClickOpen = () => {
+    this.setState({ open: true, value: null, startTime: "16:30", duration: 4 });
+  };
+
+  handleClose = () => {
+    this.setState({ open: false });
+  };
+
+  handleSelect = () => {
+    if (!this.state.value) {
+      alert("Select day");
+      return;
+    }
+
+    const [hour, minute] = this.state.startTime.split(":");
+    const day: any = this.state.value;
+    const date = moment(day).subtract(12, "h").add(parseInt(hour), "h").add(parseInt(minute), "m").format("YYYY-MM-DD hh:mm:ss");
+
+    this.props.onClose({ to: { date, time: this.state.duration } });
+    this.handleClose();
+  }
+
+  handleChange = (day: any): any => {
+    if (this.props.excludes.some(x => moment(day).isSame(x, "day"))) {
+      return;
+    }
+    this.setState({
+      value: day,
+    });
+  }
+
+  handleStartTimeChange = (e) => {
+    e.persist();
+    console.log(e.target.value);
+    this.setState({ startTime: e.target.value });
+  }
+
+  handleDurationChange = (e) => {
+    this.setState({ duration: e.value });
+  }
+
+
+  render() {
+    const Opener = this.props.component;
+    return (
+      <>
+        <Opener onClick={this.handleClickOpen} />
+        <Dialog
+          open={this.state.open}
+          onClose={this.handleClose}
+          aria-labelledby="form-dialog-title"
+          PaperProps={{ style: { overflow: "visible" } }} >
+          <DialogTitle id="form-dialog-title">NEW SCHEDULE</DialogTitle>
+          <DialogContent style={{ width: "320px", height: "max-content" }}>
+            <div>
+              <DayPicker
+                disabledDays={this.props.excludes.map(x => new Date(x))}
+                showOutsideDays
+                selectedDays={this.state.value}
+                onDayClick={this.handleChange}
+              />
+              <TextField
+                style={{ marginBottom: "16px", display: "flex" }}
+                label="Start time"
+                type="time"
+                variant="outlined"
+                defaultValue="16:30"
+                onChange={this.handleStartTimeChange}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                inputProps={{
+                  step: 300,
+                }}
+              />
+              <Select
+                onChange={this.handleDurationChange}
+                defaultValue={timeOption[3]}
+                isSearchable
+                name="duration"
+                menuPosition="fixed"
+                options={timeOption}
+              />
+            </div>
+            <Helmet>
+              <style>{`
+                .DayPicker-wrapper {
+                  display: block;
+                }
+                .DayPicker-wrapper, .DayPicker-Day {
+                  margin-bottom: 16px;
+                  outline: none;
+                }
+                .DayPicker-Day--disabled {
+                  background-color:rgba(74, 144, 226, 0.5);
+                  color: white;
+                }
+              `}</style>
+            </Helmet>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleSelect} color="primary">
+              Select
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </>
+    );
+  }
+}
+
+/*
 
 export class SchedulePicker extends React.Component<any> {
 
@@ -346,16 +372,6 @@ export class SchedulePicker extends React.Component<any> {
     });
   }
 
-  handleStartTimeChange = (e) => {
-    e.persist();
-    this.setState({ startTime: e.target.value });
-
-  }
-
-  handleDurationChange = (e) => {
-    this.setState({ duration: e.value });
-  }
-
   render() {
     const Opener = this.props.component;
     return (
@@ -390,14 +406,6 @@ export class SchedulePicker extends React.Component<any> {
               <Text ml={1} mb={1} mt={2}>
                 Duraction
               </Text>
-              <Select
-                onChange={this.handleDurationChange}
-                defaultValue={timeOption[3]}
-                isSearchable
-                name="duration"
-                menuPosition="fixed"
-                options={timeOption}
-              />
             </Flex>
             <Helmet>
               <style>{`

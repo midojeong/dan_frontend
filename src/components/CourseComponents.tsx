@@ -13,18 +13,19 @@ import {
 } from "./Table";
 import { Hr } from "./Hr";
 const selectn = require("selectn");
-import { Picker, TextfieldDialog } from "./Dialogs";
+import { Picker, TextfieldDialog, DatePicker } from "./Dialogs";
 import { getTeachers } from "../apis/TeacherAPI";
 import { getStudents } from "../apis/StudentAPI";
 import { Schedule } from "../models/Schedule";
 import { Session } from "../models/Session";
+import moment from "moment";
 
 export class CourseTable extends React.Component<any> {
 
   handleClickCourse = (id: any) => () => {
     const { pathname } = this.props.location;
     if (pathname.split("/")[3] === "schedules") {
-      this.props.history.push(`/course/${id}/schedules`);
+      this.props.history.push(`/course/${id}/schedules/list`);
     } else {
       this.props.history.push(`/course/${id}/overview`);
     }
@@ -260,8 +261,8 @@ interface ScheduleProps {
   sessions: Session[];
   fetchSchedule: (id: any) => any;
   fetchSchedules: (id: any) => any;
-  fetchSessions: () => any;
-  updateSchedule: () => any;
+  fetchSessions: (id: any) => any;
+  updateSchedule: (id: any, payload: any) => any;
   updateSessionDetail: () => any;
   updateAttendance: () => any;
   updateSessionDiscounnt: () => any;
@@ -273,23 +274,70 @@ export class CourseSchedule extends React.Component<ScheduleProps> {
     const { courseId } = this.props.match.params;
     const { scheduleId } = this.props.match.params;
     this.props.fetchSchedules(courseId);
-    if (scheduleId !== "list") this.props.fetchSchedule(scheduleId);
+    this.props.fetchSchedule(scheduleId === "list" ? 0 : scheduleId);
+    this.props.fetchSessions(scheduleId === "list" ? 0 : scheduleId);
   }
 
+  componentWillReceiveProps(next: any) {
+
+    const { scheduleId } = this.props.match.params;
+    const { scheduleId: nextScheduleId } = next.match.params;
+
+    if (nextScheduleId !== "list" && nextScheduleId !== scheduleId) {
+      this.props.fetchSchedule(nextScheduleId);
+      this.props.fetchSessions(nextScheduleId);
+    }
+
+    if (next.match.params.courseId !== this.props.match.params.courseId) {
+      this.props.fetchSchedules(next.match.params.courseId);
+      this.props.fetchSchedule(0);
+      this.props.fetchSessions(0);
+    }
+  }
+
+  createSchedule = (payload) => {
+    const { courseId } = this.props.match.params;
+    this.props.updateSchedule(courseId, { mode: "create", ...payload });
+  }
+
+  goto = (scheduleId) => {
+    const { courseId } = this.props.match.params;
+    this.props.history.push(`/course/${courseId}/schedules/${scheduleId}`);
+  }
 
   render() {
-    console.log(this.props);
     return (
       <ScheduleWrapper>
-        <ScheduleTable />
-        <ScheduleOverview />
-        <ScheduleSessions />
+        <ScheduleTable
+          create={this.createSchedule}
+          current={selectn("id", this.props.schedule)}
+          schedules={this.props.schedules}
+          goto={this.goto}
+        />
+        <ScheduleOverview
+          schedule={this.props.schedule}
+        />
+        <ScheduleSessions
+          history={this.props.history}
+          sessions={this.props.sessions}
+        />
       </ScheduleWrapper>
     );
   }
 }
 
-class ScheduleTable extends React.Component {
+class ScheduleTable extends React.Component<any> {
+
+  state = {
+    schedules: [
+      moment("2018-12-11").format("YYYY-MM-DD hh:mm:ss"),
+      moment("2018-12-12").format("YYYY-MM-DD hh:mm:ss"),
+    ]
+  }
+
+  handleSelect = (v) => {
+    this.props.create(v);
+  };
 
   render() {
     return (
@@ -298,26 +346,42 @@ class ScheduleTable extends React.Component {
           SCHEDULES
         </TableTitle>
         <TableHead>
-          <TableCell width="250px">DATE</TableCell>
-          <TableCell width="100px">TIME</TableCell>
-          <TableCell width="200px">DURATION</TableCell>
+          <TableCell width="40px"></TableCell>
+          <TableCell width="200px">DATE</TableCell>
+          <TableCell width="115px">DAY OF WEEK</TableCell>
+          <TableCell width="50px">TIME</TableCell>
           <TableRest>DETAIL</TableRest>
           <TableCell width="44px"></TableCell>
         </TableHead>
-        <TableBody>
-
+        <TableBody maxHeight="calc(100vh - 64px)">
+          {this.props.schedules.map((v: any, i: number) =>
+            <TableRow key={i} current={this.props.current && this.props.current === selectn("id", v)}>
+              <TableCell width="40px">{i + 1}</TableCell>
+              <TableCell width="200px" hover cursor="pointer" onClick={() => this.props.goto(selectn("id", v))}>{selectn("date", v)}</TableCell>
+              <TableCell width="115px">{moment(selectn("date", v)).format("dddd")}</TableCell>
+              <TableCell width="50px">{selectn("time", v)}</TableCell>
+              <TableRest>{selectn("detail", v)}</TableRest>
+              <TableDelete onClick={() => this.props.deleteCourse(selectn("id", v))} />
+            </TableRow>
+          )}
         </TableBody>
-        <TableCreate>
-          <Text>
-            + SCHEDULE
-          </Text>
-        </TableCreate>
+        <DatePicker
+          onClose={this.handleSelect}
+          type="student"
+          excludes={this.state.schedules}
+          component={(props) =>
+            <TableCreate onClick={props.onClick}>
+              <Text>
+                + ADD SCHEDULE
+              </Text>
+            </TableCreate>
+          } />
       </div>
     );
   }
 }
 
-class ScheduleOverview extends React.Component {
+class ScheduleOverview extends React.Component<any> {
 
   render() {
     return (
@@ -331,21 +395,39 @@ class ScheduleOverview extends React.Component {
 }
 
 
-class ScheduleSessions extends React.Component {
+class ScheduleSessions extends React.Component<any> {
 
   render() {
     return (
       <div style={{ gridArea: "session" }}>
         <TableTitle>
-          STUDENTS
+          ATTENDANCE and DISCOUNT
         </TableTitle>
         <TableHead>
-          <TableCell width="50px">ID</TableCell>
+          <TableCell width="50px">SID</TableCell>
           <TableCell width="200px">NAME</TableCell>
           <TableCell width="120px">ATTENDANCE</TableCell>
           <TableCell width="100px">DISCOUNT</TableCell>
           <TableRest>DC REASON</TableRest>
         </TableHead>
+        <TableBody>
+          {this.props.sessions.map((v, i) =>
+            <TableRow key={i} >
+              <TableCell width="50px">{i + 1}</TableCell>
+              <TableCell
+                width="200px"
+                cursor="pointer"
+                hover
+                onClick={() => { this.props.history.push(`/student/${selectn("Student.id", v)}/overview`) }}>
+                {selectn("Student.name", v)}
+              </TableCell>
+              <TableCell width="120px">{selectn("attendance", v)}/{selectn("Schedule.time", v)}</TableCell>
+              <TableCell width="100px">{selectn("discount", v)}</TableCell>
+              <TableRest>{selectn("discountReason", v)}</TableRest>
+            </TableRow>
+          )}
+          <Hr />
+        </TableBody>
       </div>
     );
   }

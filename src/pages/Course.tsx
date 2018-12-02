@@ -121,8 +121,22 @@ export class CoursePage extends React.Component<any> {
     this.fetchCourse(id);
   }
 
-  updateCourseSchedule = async () => {
-
+  updateCourseSchedule = async (id: any, payload: any) => {
+    await updateCourseSchedule(id, payload);
+    this.fetchSchedules(id);
+    switch (payload.mode) {
+      case "create":
+        break;
+      case "update":
+        this.fetchSchedule(payload.from);
+        this.fetchSessions(payload.from);
+        break;
+      case "delete":
+        this.props.history.push(`/course/${id}/schedules/list`);
+        break;
+      default:
+        break;
+    }
   }
 
   updateAttendance = async (scheduleId: any, sessionId: any, attendance: number) => {
