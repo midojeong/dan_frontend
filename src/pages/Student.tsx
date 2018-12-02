@@ -1,6 +1,7 @@
 import React from "react";
 import { List, Main } from "../components";
 import { Route } from "react-router-dom";
+import selectn from "selectn";
 import {
   createStudent,
 
@@ -20,6 +21,12 @@ import {
   StudentInvoice,
   StudentPayment,
 } from "../components/StudentComponents";
+import {
+  createExtra,
+  deleteExtra,
+  updateExtra,
+  updateExtraInvoice,
+} from "../apis/ExtraMoneyAPI";
 
 export class StudentPage extends React.Component<any> {
 
@@ -29,7 +36,7 @@ export class StudentPage extends React.Component<any> {
     courses: [],
     invoices: [],
     sessions: [],
-    extramoeny: [],
+    extramoney: [],
   }
 
   createStudent = async (payload) => {
@@ -63,9 +70,9 @@ export class StudentPage extends React.Component<any> {
     this.setState({ sessions: data });
   }
 
-  fetchExtramoeny = async (id) => {
+  fetchExtramoney = async (id) => {
     const data = (await getStudentExtramoney(id) || []); // TOTO 더 나은 에러처리
-    this.setState({ extramoenys: data });
+    this.setState({ extramoney: data });
   }
 
   updateStudentAttribute = async (id: any, key: any, value: any) => {
@@ -84,6 +91,25 @@ export class StudentPage extends React.Component<any> {
     await this.fetchStudents();
   }
 
+  createExtra = async (payload) => {
+    await createExtra(payload);
+    this.fetchExtramoney(selectn("id", this.state.student));
+  }
+
+  deleteExtra = async (id: any) => {
+    await deleteExtra(id);
+    this.fetchExtramoney(selectn("id", this.state.student));
+  }
+
+  updateExtraInvoice = async (id: any, invoiceId: any) => {
+    await updateExtraInvoice(id, { invoice: invoiceId });
+    this.fetchExtramoney(selectn("id", this.state.student));
+  }
+
+  updateExtra = async (id, attr, value) => {
+    await updateExtra(id, attr, value);
+    this.fetchExtramoney(selectn("id", this.state.student));
+  }
 
   componentDidMount() {
     this.fetchStudents();
@@ -117,6 +143,18 @@ export class StudentPage extends React.Component<any> {
             />} />
           <Route path="/student/:id/payment"
             render={(props: any) => <StudentPayment
+              {...props}
+              fetchSessions={this.fetchSessions}
+              sessions={this.state.sessions}
+              fetchInvoices={this.fetchInvoices}
+              invoices={this.state.invoices}
+              fetchExtramoney={this.fetchExtramoney}
+              extramoney={this.state.extramoney}
+              createExtra={this.createExtra}
+              deleteExtra={this.deleteExtra}
+              updateExtra={this.updateExtra}
+              fetchStudent={this.fetchStudent}
+              student={this.state.student}
             />} />
         </Main>
       </>

@@ -8,7 +8,7 @@ import {
   TableEntity, TableRest,
   TableMoney, TableCreate,
   TableTitle, TableDelete,
-  TableBody,
+  TableBody, TableCheckBox
 } from "./Table";
 import { Hr } from "./Hr";
 const selectn = require("selectn");
@@ -20,8 +20,10 @@ export class StudentTable extends React.Component<any> {
 
   handleClickStudent = (id: any) => () => {
     const { pathname } = this.props.location;
-    if (pathname.split("/")[3] === "schedules") {
-      this.props.history.push(`/student/${id}/schedules`);
+    if (pathname.split("/")[3] === "invoice") {
+      this.props.history.push(`/student/${id}/invoice`);
+    } else if (pathname.split("/")[3] === "payment") {
+      this.props.history.push(`/student/${id}/payment`);
     } else {
       this.props.history.push(`/student/${id}/overview`);
     }
@@ -225,15 +227,94 @@ const PaymentWrapper = styled.div`
     "extra edit";
 `;
 
-export class StudentPayment extends React.Component {
+interface PaymentProps {
+  sessions: any;
+  invoices: any;
+  extramoney: any;
+  student: any;
+}
+
+interface PaymentState {
+  selectedExtras: any;
+  selectedSessions: any;
+}
+
+export class StudentPayment extends React.Component<any, PaymentState> {
+
+  componentDidMount() {
+    const { id } = this.props.match.params;
+    this.props.fetchStudent(id);
+    this.props.fetchInvoices(id);
+    this.props.fetchSessions(id);
+    this.props.fetchExtramoney(id);
+  }
+
+  componentWillReceiveProps(next) {
+    const { id } = this.props.match.params;
+    const { id: nextId } = next.match.params;
+    if (id !== nextId) {
+      this.props.fetchStudent(nextId);
+      this.props.fetchInvoices(nextId);
+      this.props.fetchSessions(nextId);
+      this.props.fetchExtramoney(nextId);
+      this.clearState();
+    }
+  }
+
+  state = {
+    selectedExtras: [],
+    selectedSessions: [],
+  }
+
+  clearState = () => {
+    this.setState({
+      selectedExtras: [],
+      selectedSessions: [],
+    });
+
+  }
+
+  handleSelectExtra = (id: never) => {
+    const selected = this.state.selectedExtras;
+    if (selected.includes(id)) {
+      this.setState({ selectedExtras: selected.filter(x => x !== id) });
+    } else {
+      this.setState({ selectedExtras: [id, ...selected] });
+    }
+  }
+
+  handleSelectSession = (id: never) => {
+    const selected = this.state.selectedSessions;
+    if (selected.includes(id)) {
+      this.setState({ selectedSessions: selected.filter(x => x !== id) });
+    } else {
+      this.setState({ selectedSessions: [id, ...selected] });
+    }
+  }
 
   render() {
     return (
       <PaymentWrapper>
         <InvoiceTable />
-        <SessionTable />
-        <ExtraTable />
-        <Edit />
+        <SessionTable
+          sessions={this.props.sessions}
+          select={this.handleSelectSession}
+          selected={this.state.selectedSessions}
+          goto={this.props.history.push}
+        />
+        <ExtraTable
+          create={(payload) => { this.props.createExtra({ student: selectn("id", this.props.student), ...payload }) }}
+          delete={(id) => { this.props.deleteExtra(id) }}
+          extras={this.props.extramoney}
+          select={this.handleSelectExtra}
+          selected={this.state.selectedExtras}
+        />
+        <Edit
+          sessions={(this.props.sessions || []).filter(x => this.state.selectedSessions.includes(selectn("id", x) as never))}
+          extras={(this.props.extramoney || []).filter(x => this.state.selectedExtras.includes(selectn("id", x) as never))}
+          selectSession={this.handleSelectSession}
+          selectExtra={this.handleSelectExtra}
+        />
       </PaymentWrapper>
     );
   }
@@ -264,7 +345,7 @@ class InvoiceTable extends React.Component {
   }
 }
 
-class SessionTable extends React.Component {
+class SessionTable extends React.Component<any> {
 
   render() {
     return (
@@ -275,46 +356,120 @@ class SessionTable extends React.Component {
           </TableTitle>
           <TableHead>
             <TableCell width="44px" bg="rgb(196, 212, 255)"></TableCell>
-            <TableCell width="50px">ID</TableCell>
+            <TableCell width="50px">SID</TableCell>
             <TableCell width="150px">CHARGED</TableCell>
             <TableCell width="120px">NET</TableCell>
             <TableCell width="120px">PAID</TableCell>
             <TableCell width="150px">COURSE</TableCell>
             <TableCell width="50px">AT</TableCell>
             <TableCell width="50px">D/C</TableCell>
-            <TableRest>D/C REASON</TableRest>
+            <TableRest>SCHEDULE</TableRest>
           </TableHead>
+          <TableBody>
+            {this.props.sessions.map((v: any, i: any) =>
+              <TableRow key={i}>
+                <TableCheckBox
+                  onClick={() => { this.props.select((selectn("id", v))); }}
+                  checked={this.props.selected.includes(selectn("id", v))} />
+                <TableCell width="50px">{selectn("id", v)}</TableCell>
+                <TableCell width="150px">{selectn("charged", v)}</TableCell>
+                <TableCell width="120px">{selectn("net", v)}</TableCell>
+                <TableCell width="120px">{selectn("paid", v)}</TableCell>
+                <TableCell width="150px"
+                  hover
+                  cursor="pointer"
+                  onClick={() => {
+                    const course = selectn("Course.id", v);
+                    if (course) {
+                      this.props.goto(`/course/${course}/overview`);
+                    }
+                  }}>
+                  {selectn("Course.name", v)}
+                </TableCell>
+                <TableCell width="50px">{selectn("attendance", v)}/{selectn("Schedule.time", v)}</TableCell>
+                <TableCell width="50px">{selectn("discount", v)}</TableCell>
+                <TableRest
+                  hover
+                  cursor="pointer"
+                  onClick={() => {
+                    const course = selectn("Course.id", v);
+                    const schedule = selectn("Schedule.id", v);
+                    if (course && schedule) {
+                      this.props.goto(`/course/${course}/schedules/${schedule}`);
+                    }
+                  }}>
+                  {selectn("Schedule.date", v)}
+                </TableRest>
+              </TableRow>
+            )}
+          </TableBody>
+          <Hr />
         </Table>
       </div>
     );
   }
 }
 
-class ExtraTable extends React.Component {
+class ExtraTable extends React.Component<any> {
 
   render() {
     return (
       <div style={{ gridArea: "extra" }}>
         <Table>
           <TableTitle>
-            EXTRAS
+            EXTRA MONEY (coupons, extra billings ...)
           </TableTitle>
         </Table>
         <TableHead>
           <TableCell width="44px" bg="rgb(196, 212, 255)"></TableCell>
-          <TableCell width="50px">ID</TableCell>
+          <TableCell width="50px">EID</TableCell>
           <TableCell width="150px">AMOUNT</TableCell>
           <TableRest>DETAIL</TableRest>
           <TableCell width="44px"></TableCell>
         </TableHead>
+        <TableBody>
+          {this.props.extras.map((v: any, i: any) =>
+            <TableRow key={i}>
+              <TableCheckBox
+                onClick={() => { this.props.select((selectn("id", v))); }}
+                checked={this.props.selected.includes(selectn("id", v))} />
+              <TableCell width="50px">{selectn("id", v)}</TableCell>
+              <TableCell width="150px">{selectn("amount", v)}</TableCell>
+              <TableRest>{selectn("detail", v)}</TableRest>
+              <TableDelete onClick={() => {
+                // 선택되어있는데 삭제하면 버그가 발생할 수 있음 BUGGY
+                this.props.delete(selectn("id", v))
+              }} />
+            </TableRow>
+          )}
+        </TableBody>
+        <Hr />
+        <TextfieldDialog
+          onClose={this.props.create}
+          title="Create New Invoice"
+          fields={["amount", "detail"]}
+          placeholders={["10000", "write some descriptions"]}
+          errorHandler={[
+            money => (parseInt(money) <= 0),
+            () => false,
+          ]}
+          types={["number", "text"]}
+          component={(props) =>
+            <TableCreate onClick={props.onClick}>
+              <Text>
+                + INVOICE
+              </Text>
+            </TableCreate>
+          } />
       </div>
     );
   }
 }
 
-class Edit extends React.Component {
+class Edit extends React.Component<any> {
 
   render() {
+    console.log(this.props);
     return (
       <>
         <div style={{ gridArea: "edit", borderLeft: "1px solid rgba(22,27,72,0.1)" }}>
@@ -329,7 +484,22 @@ class Edit extends React.Component {
               <TableCell width="44px"></TableCell>
             </TableHead>
             <TableBody height="calc(100vh - 128px)">
-
+              {this.props.sessions.map((v, i) =>
+                <TableRow key={i}>
+                  <TableCell width="50px">{selectn("id", v)}</TableCell>
+                  <TableCell width="120px">{selectn("charged", v)}</TableCell>
+                  <TableRest>{selectn("detail", v)}</TableRest>
+                  <TableDelete onClick={() => { this.props.selectSession((selectn("id", v))); }} />
+                </TableRow>
+              )}{this.props.extras.map((v, i) =>
+                <TableRow key={i}>
+                  <TableCell width="50px">{selectn("id", v)}</TableCell>
+                  <TableCell width="120px">{selectn("amount", v)}</TableCell>
+                  <TableRest>{selectn("detail", v)}</TableRest>
+                  <TableDelete onClick={() => { this.props.selectExtra((selectn("id", v))); }} />
+                </TableRow>
+              )}
+              <Hr />
             </TableBody>
             <TableRow>
               <Flex style={{ flexGrow: 1 }}>

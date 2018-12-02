@@ -1,5 +1,6 @@
 import React from "react";
 import { List, Main } from "../components";
+import selectn from "selectn";
 import {
   CourseTable,
   CourseOverview,
@@ -139,19 +140,22 @@ export class CoursePage extends React.Component<any> {
     }
   }
 
-  updateAttendance = async (scheduleId: any, sessionId: any, attendance: number) => {
+  //C
+  updateAttendance = async (sessionId: any, attendance: number) => {
     await updateSessionAttendance(sessionId, { attendance });
-    this.fetchSessions(scheduleId);
+    this.fetchSessions(selectn("id", this.state.schedule));
   }
 
-  updateSessionDiscount = async (scheduleId: any, sessionId: any, discount: number) => {
+  //C
+  updateSessionDiscount = async (sessionId: any, discount: number) => {
     await updateSessionDiscount(sessionId, { discount });
-    this.fetchSessions(scheduleId);
+    this.fetchSessions(selectn("id", this.state.schedule));
   }
 
-  updateSessionDetail = async (scheduleId: any, sessionId: any, detail: string) => {
+  //C
+  updateSessionDetail = async (sessionId: any, detail: string) => {
     await updateSession(sessionId, "detail", detail);
-    this.fetchSessions(scheduleId);
+    this.fetchSessions(selectn("id", this.state.schedule));
   }
 
   deleteCourseTeacher = async (id: any) => {

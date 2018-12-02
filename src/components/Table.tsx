@@ -2,6 +2,7 @@ import * as React from "react";
 import styled, { css } from "styled-components";
 import { Text, Flex } from "./styled";
 import { DeleteButton } from "./Icon";
+import { CheckButton } from "./Icon";
 
 export const TableCell = styled<any>(Flex)`
   flex-shrink: 0;
@@ -97,6 +98,10 @@ export const TableRest = styled.div<any>`
   overflow: hidden;
   white-space: nowrap;
   border-right: 1px solid rgba(22,27,72, 0.18);
+  ${props => props.cursor ? "cursor: " + props.cursor + ";" : ""}
+  :hover {
+    ${props => props.hover ? "background: rgba(22,27,72,0.2);" : ""}
+  }
 `;
 
 export const TableMoney = styled<any>(TableCell)`
@@ -117,3 +122,17 @@ export const TableCreate = styled.div<any>`
     background: hsla(200, 100%, 80%, 0.5);
   }
 `;
+
+export const TableCheckBox = (props) => {
+  return (
+    <Flex
+      alignItems="center"
+      justifyContent="center"
+      width="44px"
+      style={{ cursor: "pointer", flexShrink: 0, borderRight: "1px solid rgba(22,27,72,0.18)" }}
+      onClick={props.onClick}
+      bg={props.checked ? "hsl(200,100%,80%)" : "none"}>
+      {props.checked ? <CheckButton /> : null}
+    </Flex>
+  );
+}

@@ -2,6 +2,7 @@ import * as React from "react";
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
+import CheckIcon from '@material-ui/icons/Check';
 import { IconButton } from "@material-ui/core";
 
 export const AddButton = (props: any) => {
@@ -26,4 +27,12 @@ export const EditButton = (props: any) => {
       <EditIcon fontSize="small" />
     </IconButton>
   );
+}
+
+export const CheckButton = (props: any) => {
+  return (
+    <IconButton {...props}>
+      <CheckIcon fontSize="small" />
+    </IconButton>
+  )
 }

@@ -264,8 +264,8 @@ interface ScheduleProps {
   fetchSessions: (id: any) => any;
   updateSchedule: (id: any, payload: any) => any;
   updateSessionDetail: () => any;
-  updateAttendance: (schduleId, sessionId, attendance) => any;
-  updateSessionDiscount: (scheduleId, sessionId, discount) => any;
+  updateAttendance: (sessionId, attendance) => any;
+  updateSessionDiscount: (sessionId, discount) => any;
 }
 
 export class CourseSchedule extends React.Component<ScheduleProps> {
@@ -331,8 +331,8 @@ export class CourseSchedule extends React.Component<ScheduleProps> {
           history={this.props.history}
           sessions={this.props.sessions}
           updateDetail={this.props.updateSessionDetail}
-          updateAttendance={(sessionId, attendance) => this.props.updateAttendance(selectn("id", this.props.schedule), sessionId, attendance)}
-          updateDiscount={(sessionId, discount) => this.props.updateSessionDiscount(selectn("id", this.props.schedule), sessionId, discount)}
+          updateAttendance={this.props.updateAttendance}
+          updateDiscount={this.props.updateSessionDiscount}
         />
       </ScheduleWrapper>
     );
