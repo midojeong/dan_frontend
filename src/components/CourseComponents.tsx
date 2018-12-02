@@ -264,8 +264,8 @@ interface ScheduleProps {
   fetchSessions: (id: any) => any;
   updateSchedule: (id: any, payload: any) => any;
   updateSessionDetail: () => any;
-  updateAttendance: () => any;
-  updateSessionDiscounnt: () => any;
+  updateAttendance: (schduleId, sessionId, attendance) => any;
+  updateSessionDiscount: (scheduleId, sessionId, discount) => any;
 }
 
 export class CourseSchedule extends React.Component<ScheduleProps> {
@@ -297,7 +297,15 @@ export class CourseSchedule extends React.Component<ScheduleProps> {
 
   createSchedule = (payload) => {
     const { courseId } = this.props.match.params;
-    this.props.updateSchedule(courseId, { mode: "create", ...payload });
+  }
+
+  updateSchedule = (payload) => {
+
+  }
+
+  deleteSchedule = (id) => {
+    const { courseId } = this.props.match.params;
+    this.props.updateSchedule(courseId, { mode: "delete", "from": id });
   }
 
   goto = (scheduleId) => {
@@ -310,16 +318,21 @@ export class CourseSchedule extends React.Component<ScheduleProps> {
       <ScheduleWrapper>
         <ScheduleTable
           create={this.createSchedule}
+          delete={this.deleteSchedule}
           current={selectn("id", this.props.schedule)}
           schedules={this.props.schedules}
           goto={this.goto}
         />
         <ScheduleOverview
           schedule={this.props.schedule}
+          update={this.updateSchedule}
         />
         <ScheduleSessions
           history={this.props.history}
           sessions={this.props.sessions}
+          updateDetail={this.props.updateSessionDetail}
+          updateAttendance={(sessionId, attendance) => this.props.updateAttendance(selectn("id", this.props.schedule), sessionId, attendance)}
+          updateDiscount={(sessionId, discount) => this.props.updateSessionDiscount(selectn("id", this.props.schedule), sessionId, discount)}
         />
       </ScheduleWrapper>
     );
@@ -327,13 +340,6 @@ export class CourseSchedule extends React.Component<ScheduleProps> {
 }
 
 class ScheduleTable extends React.Component<any> {
-
-  state = {
-    schedules: [
-      moment("2018-12-11").format("YYYY-MM-DD hh:mm:ss"),
-      moment("2018-12-12").format("YYYY-MM-DD hh:mm:ss"),
-    ]
-  }
 
   handleSelect = (v) => {
     this.props.create(v);
@@ -354,21 +360,21 @@ class ScheduleTable extends React.Component<any> {
           <TableCell width="44px"></TableCell>
         </TableHead>
         <TableBody maxHeight="calc(100vh - 64px)">
-          {this.props.schedules.map((v: any, i: number) =>
+          {this.props.schedules.filter(v => selectn("visible", v)).map((v: any, i: number) =>
             <TableRow key={i} current={this.props.current && this.props.current === selectn("id", v)}>
               <TableCell width="40px">{i + 1}</TableCell>
               <TableCell width="200px" hover cursor="pointer" onClick={() => this.props.goto(selectn("id", v))}>{selectn("date", v)}</TableCell>
               <TableCell width="115px">{moment(selectn("date", v)).format("dddd")}</TableCell>
               <TableCell width="50px">{selectn("time", v)}</TableCell>
               <TableRest>{selectn("detail", v)}</TableRest>
-              <TableDelete onClick={() => this.props.deleteCourse(selectn("id", v))} />
+              <TableDelete onClick={() => this.props.delete(selectn("id", v))} />
             </TableRow>
           )}
         </TableBody>
         <DatePicker
           onClose={this.handleSelect}
           type="student"
-          excludes={this.state.schedules}
+          excludes={this.props.schedules.filter(v => selectn("visible", v)).map(x => x.date)}
           component={(props) =>
             <TableCreate onClick={props.onClick}>
               <Text>
@@ -397,6 +403,14 @@ class ScheduleOverview extends React.Component<any> {
 
 class ScheduleSessions extends React.Component<any> {
 
+  updateAttendance = (id, attendance) => {
+    this.props.updateAttendance(id, attendance);
+  }
+
+  updateDiscount = (id, discount) => {
+    this.props.updateDiscount(id, discount);
+  }
+
   render() {
     return (
       <div style={{ gridArea: "session" }}>
@@ -413,7 +427,7 @@ class ScheduleSessions extends React.Component<any> {
         <TableBody>
           {this.props.sessions.map((v, i) =>
             <TableRow key={i} >
-              <TableCell width="50px">{i + 1}</TableCell>
+              <TableCell width="50px">{selectn("id", v)}</TableCell>
               <TableCell
                 width="200px"
                 cursor="pointer"
@@ -421,8 +435,36 @@ class ScheduleSessions extends React.Component<any> {
                 onClick={() => { this.props.history.push(`/student/${selectn("Student.id", v)}/overview`) }}>
                 {selectn("Student.name", v)}
               </TableCell>
-              <TableCell width="120px">{selectn("attendance", v)}/{selectn("Schedule.time", v)}</TableCell>
-              <TableCell width="100px">{selectn("discount", v)}</TableCell>
+              <TextfieldDialog
+                onClose={(payload) => this.updateAttendance(selectn("id", v), payload.attendance)}
+                title="Update attendance"
+                fields={["attendance"]}
+                placeholders={["0"]}
+                value={{ attendance: selectn("attendance", v) }}
+                errorHandler={[
+                  attendance => (attendance < 0 || attendance > selectn("Schedule.time", v))
+                ]}
+                types={["number"]}
+                component={(props) =>
+                  <TableCell width="120px" onClick={props.onClick} hover cursor="pointer">
+                    {selectn("attendance", v)}/{selectn("Schedule.time", v)}
+                  </TableCell>
+                } />
+              <TextfieldDialog
+                onClose={(payload) => this.updateDiscount(selectn("id", v), payload.discount)}
+                title="Update discount"
+                fields={["discount"]}
+                placeholders={["0"]}
+                value={{ discount: selectn("discount", v) }}
+                errorHandler={[
+                  discount => (discount < 0)
+                ]}
+                types={["number"]}
+                component={(props) =>
+                  <TableCell width="100px" onClick={props.onClick} hover cursor="pointer">
+                    {selectn("discount", v)}
+                  </TableCell>
+                } />
               <TableRest>{selectn("discountReason", v)}</TableRest>
             </TableRow>
           )}

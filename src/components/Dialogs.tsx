@@ -103,7 +103,7 @@ export class TextfieldDialog extends React.Component<any, any> {
   };
 
   handleClickOpen = () => {
-    this.setState({ open: true, value: {} });
+    this.setState({ open: true, value: this.props.value || {} });
   };
 
   handleClose = () => {
