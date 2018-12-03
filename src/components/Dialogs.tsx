@@ -215,7 +215,7 @@ export class DatePicker extends React.Component<any, any> {
     open: false,
     value: null,
     startTime: "16:30",
-    duration: timeOption[3],
+    duration: 4,
   };
 
   handleClickOpen = () => {
@@ -223,7 +223,7 @@ export class DatePicker extends React.Component<any, any> {
       open: true,
       value: null,
       startTime: "16:30",
-      duration: timeOption.filter(x => x.value === 4)[0]
+      duration: 4
     });
   };
 
@@ -298,7 +298,7 @@ export class DatePicker extends React.Component<any, any> {
               />
               <Select
                 onChange={this.handleDurationChange}
-                defaultValue={this.state.duration}
+                defaultValue={timeOption[3]}
                 isSearchable
                 name="duration"
                 menuPosition="fixed"
