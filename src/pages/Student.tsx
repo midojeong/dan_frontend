@@ -27,6 +27,9 @@ import {
   updateExtra,
   updateExtraInvoice,
 } from "../apis/ExtraMoneyAPI";
+import {
+  createInvoice,
+} from "../apis/InvoiceAPI";
 
 export class StudentPage extends React.Component<any> {
 
@@ -96,6 +99,14 @@ export class StudentPage extends React.Component<any> {
     this.fetchExtramoney(selectn("id", this.state.student));
   }
 
+  createInvoice = async (sessions = [], extramoney = []) => {
+    const student = selectn("id", this.state.student);
+    await createInvoice({ student, sessions, extramoney });
+    this.fetchInvoices(student);
+    this.fetchExtramoney(student);
+    this.fetchSessions(student);
+  }
+
   deleteExtra = async (id: any) => {
     await deleteExtra(id);
     this.fetchExtramoney(selectn("id", this.state.student));
@@ -151,6 +162,7 @@ export class StudentPage extends React.Component<any> {
               fetchExtramoney={this.fetchExtramoney}
               extramoney={this.state.extramoney}
               createExtra={this.createExtra}
+              createInvoice={this.createInvoice}
               deleteExtra={this.deleteExtra}
               updateExtra={this.updateExtra}
               fetchStudent={this.fetchStudent}

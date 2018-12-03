@@ -294,15 +294,17 @@ export class StudentPayment extends React.Component<any, PaymentState> {
   }
 
   createInvoice = (sessions, extras) => {
-    console.log(sessions, extras);
+    this.props.createInvoice(sessions, extras);
   }
 
   render() {
     return (
       <PaymentWrapper>
-        <InvoiceTable />
+        <InvoiceTable
+          invoices={this.props.invoices}
+        />
         <SessionTable
-          sessions={this.props.sessions}
+          sessions={(this.props.sessions || []).filter(x => parseInt(x.net) !== 0)}
           select={this.handleSelectSession}
           selected={this.state.selectedSessions}
           goto={this.props.history.push}
@@ -310,7 +312,7 @@ export class StudentPayment extends React.Component<any, PaymentState> {
         <ExtraTable
           create={(payload) => { this.props.createExtra({ student: selectn("id", this.props.student), ...payload }) }}
           delete={(id) => { this.props.deleteExtra(id) }}
-          extras={this.props.extramoney}
+          extras={(this.props.extramoney || []).filter(x => x.active)}
           select={this.handleSelectExtra}
           selected={this.state.selectedExtras}
         />
@@ -327,7 +329,7 @@ export class StudentPayment extends React.Component<any, PaymentState> {
   }
 }
 
-class InvoiceTable extends React.Component {
+class InvoiceTable extends React.Component<any> {
 
   render() {
     return (
@@ -346,6 +348,21 @@ class InvoiceTable extends React.Component {
             <TableCell width="80px" bg="rgb(196, 212, 255)">PUBLISH</TableCell>
             <TableCell width="44px"></TableCell>
           </TableHead>
+          <TableBody>
+            {this.props.invoices.map((v: any, i: any) =>
+              <TableRow key={i}>
+                <TableCell width="50px">{selectn("id", v)}</TableCell>
+                <TableCell width="100px">{selectn("amount", v)}</TableCell>
+                <TableCell width="100px">{selectn("card", v)}</TableCell>
+                <TableCell width="100px">{selectn("cash", v)}</TableCell>
+                <TableCell width="100px">{selectn("transfer", v)}</TableCell>
+                <TableRest>{selectn("detail", v)}</TableRest>
+                <TableCell width="80px" bg="rgb(196, 212, 255)">PUBLISH</TableCell>
+                <TableDelete />
+              </TableRow>
+            )}
+            <Hr />
+          </TableBody>
         </Table>
       </div>
     );

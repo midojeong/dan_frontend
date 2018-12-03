@@ -241,7 +241,7 @@ export class DatePicker extends React.Component<any, any> {
     const day: any = this.state.value;
     const date = moment(day).subtract(12, "h").add(parseInt(hour), "h").add(parseInt(minute), "m").format("YYYY-MM-DD HH:mm:ss");
 
-    this.props.onClose({ to: { date, time: this.state.duration.value } });
+    this.props.onClose({ to: { date, time: this.state.duration } });
     this.handleClose();
   }
 

@@ -18,7 +18,7 @@ const api = `${getAPI()}/invoice`;
 
 type InvoicePayload = {
   sessions: any;
-  extras: any;
+  extramoney: any;
   student: any;
   cash?: number;
   card?: number;
