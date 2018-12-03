@@ -302,6 +302,7 @@ export class StudentPayment extends React.Component<any, PaymentState> {
       <PaymentWrapper>
         <InvoiceTable
           invoices={this.props.invoices}
+          delete={this.props.deleteInvoice}
         />
         <SessionTable
           sessions={(this.props.sessions || []).filter(x => parseInt(x.net) !== 0)}
@@ -357,8 +358,8 @@ class InvoiceTable extends React.Component<any> {
                 <TableCell width="100px">{selectn("cash", v)}</TableCell>
                 <TableCell width="100px">{selectn("transfer", v)}</TableCell>
                 <TableRest>{selectn("detail", v)}</TableRest>
-                <TableCell width="80px" bg="rgb(196, 212, 255)">PUBLISH</TableCell>
-                <TableDelete />
+                <TableCell width="80px" bg="rgb(196, 212, 255)"></TableCell>
+                <TableDelete onClick={() => this.props.delete(selectn("id", v))} />
               </TableRow>
             )}
             <Hr />
