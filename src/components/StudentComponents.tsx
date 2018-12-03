@@ -12,6 +12,7 @@ import {
 } from "./Table";
 import { Hr } from "./Hr";
 const selectn = require("selectn");
+import * as R from "ramda";
 import { Flex } from "./styled";
 import { TextfieldDialog } from "./Dialogs";
 import { EditField, DetailField } from "./Field";
@@ -292,6 +293,10 @@ export class StudentPayment extends React.Component<any, PaymentState> {
     }
   }
 
+  createInvoice = (sessions, extras) => {
+    console.log(sessions, extras);
+  }
+
   render() {
     return (
       <PaymentWrapper>
@@ -314,6 +319,8 @@ export class StudentPayment extends React.Component<any, PaymentState> {
           extras={(this.props.extramoney || []).filter(x => this.state.selectedExtras.includes(selectn("id", x) as never))}
           selectSession={this.handleSelectSession}
           selectExtra={this.handleSelectExtra}
+          createInvoice={this.createInvoice}
+          clearSelection={this.clearState}
         />
       </PaymentWrapper>
     );
@@ -457,7 +464,7 @@ class ExtraTable extends React.Component<any> {
           component={(props) =>
             <TableCreate onClick={props.onClick}>
               <Text>
-                + INVOICE
+                + EXTRA MONEY
               </Text>
             </TableCreate>
           } />
@@ -466,10 +473,50 @@ class ExtraTable extends React.Component<any> {
   }
 }
 
+const PaymentDetail = styled.input`
+  outline: none;
+  height: 28px;
+  width: 100%;
+  border: none;
+  background: inherit;
+`;
+
 class Edit extends React.Component<any> {
 
+  state = {
+    details: {},
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { sessions: current } = this.props;
+    const { sessions: next } = nextProps;
+    if (current.length < next.length) { // 추가
+      const session: any = R.differenceWith((x: any, y: any) => x.id === y.id, next, current)[0];
+      this.setState({ details: { ...this.state.details, [session.id]: session.charged > 0 ? "tuition fee" : "refund" } });
+    } else if (current.length > next.length) { // 삭제
+      const session: any = R.difference(current.map(x => x.id), next.map(x => x.id))[0];
+      this.setState({ details: R.omit([session], this.state.details) });
+    }
+  }
+
+  handleChange = (id) => (e) => {
+    this.setState({
+      details: {
+        ...this.state.details,
+        [id]: e.target.value
+      }
+    });
+  }
+
+  handleCreate = () => {
+    const sessions = Object.entries({ ...this.state.details });
+    const extras = [...this.props.extras].map(x => x.id);
+
+    this.props.clearSelection();
+    this.props.createInvoice(sessions, extras);
+  }
+
   render() {
-    console.log(this.props);
     return (
       <>
         <div style={{ gridArea: "edit", borderLeft: "1px solid rgba(22,27,72,0.1)" }}>
@@ -488,7 +535,9 @@ class Edit extends React.Component<any> {
                 <TableRow key={i}>
                   <TableCell width="50px">{selectn("id", v)}</TableCell>
                   <TableCell width="120px">{selectn("charged", v)}</TableCell>
-                  <TableRest>{selectn("detail", v)}</TableRest>
+                  <TableRest>
+                    <PaymentDetail value={this.state.details[selectn("id", v)]} onChange={this.handleChange(selectn("id", v))} />
+                  </TableRest>
                   <TableDelete onClick={() => { this.props.selectSession((selectn("id", v))); }} />
                 </TableRow>
               )}{this.props.extras.map((v, i) =>
@@ -504,10 +553,12 @@ class Edit extends React.Component<any> {
             <TableRow>
               <Flex style={{ flexGrow: 1 }}>
                 <Text ml="8px" medium>Total</Text>
-                <Text ml="auto" mr="8px" medium>₩ 0</Text>
+                <Text ml="auto" mr="8px" medium>₩ {
+                  [...this.props.sessions.map(x => x.charged), ...this.props.extras.map(x => x.amount)].reduce((acc, n) => acc + n, 0)
+                }</Text>
               </Flex>
             </TableRow>
-            <TableCreate>
+            <TableCreate onClick={this.handleCreate}>
               <Text>
                 + INVOICE
               </Text>

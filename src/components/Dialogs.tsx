@@ -215,11 +215,16 @@ export class DatePicker extends React.Component<any, any> {
     open: false,
     value: null,
     startTime: "16:30",
-    duration: 4,
+    duration: timeOption[3],
   };
 
   handleClickOpen = () => {
-    this.setState({ open: true, value: null, startTime: "16:30", duration: 4 });
+    this.setState({
+      open: true,
+      value: null,
+      startTime: "16:30",
+      duration: timeOption.filter(x => x.value === 4)[0]
+    });
   };
 
   handleClose = () => {
@@ -234,9 +239,9 @@ export class DatePicker extends React.Component<any, any> {
 
     const [hour, minute] = this.state.startTime.split(":");
     const day: any = this.state.value;
-    const date = moment(day).subtract(12, "h").add(parseInt(hour), "h").add(parseInt(minute), "m").format("YYYY-MM-DD hh:mm:ss");
+    const date = moment(day).subtract(12, "h").add(parseInt(hour), "h").add(parseInt(minute), "m").format("YYYY-MM-DD HH:mm:ss");
 
-    this.props.onClose({ to: { date, time: this.state.duration } });
+    this.props.onClose({ to: { date, time: this.state.duration.value } });
     this.handleClose();
   }
 
@@ -250,8 +255,6 @@ export class DatePicker extends React.Component<any, any> {
   }
 
   handleStartTimeChange = (e) => {
-    e.persist();
-    console.log(e.target.value);
     this.setState({ startTime: e.target.value });
   }
 
@@ -270,7 +273,7 @@ export class DatePicker extends React.Component<any, any> {
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
           PaperProps={{ style: { overflow: "visible" } }} >
-          <DialogTitle id="form-dialog-title">NEW SCHEDULE</DialogTitle>
+          <DialogTitle id="form-dialog-title">SCHEDULE</DialogTitle>
           <DialogContent style={{ width: "320px", height: "max-content" }}>
             <div>
               <DayPicker
@@ -284,7 +287,7 @@ export class DatePicker extends React.Component<any, any> {
                 label="Start time"
                 type="time"
                 variant="outlined"
-                defaultValue="16:30"
+                defaultValue={this.state.startTime}
                 onChange={this.handleStartTimeChange}
                 InputLabelProps={{
                   shrink: true,
@@ -295,7 +298,7 @@ export class DatePicker extends React.Component<any, any> {
               />
               <Select
                 onChange={this.handleDurationChange}
-                defaultValue={timeOption[3]}
+                defaultValue={this.state.duration}
                 isSearchable
                 name="duration"
                 menuPosition="fixed"

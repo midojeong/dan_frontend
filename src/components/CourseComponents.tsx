@@ -1,7 +1,8 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Text } from "./styled";
+import { Text, Flex } from "./styled";
 import { EditField, DetailField, PickerField } from "./Field";
+import { EditButton } from "./Icon";
 import {
   Table, TableRow,
   TableId, TableName,
@@ -263,6 +264,7 @@ interface ScheduleProps {
   fetchSchedules: (id: any) => any;
   fetchSessions: (id: any) => any;
   updateSchedule: (id: any, payload: any) => any;
+  updateScheduleDetail: (id: any, detail: string) => any;
   updateSessionDetail: () => any;
   updateAttendance: (sessionId, attendance) => any;
   updateSessionDiscount: (sessionId, discount) => any;
@@ -327,6 +329,7 @@ export class CourseSchedule extends React.Component<ScheduleProps> {
         <ScheduleOverview
           schedule={this.props.schedule}
           update={this.updateSchedule}
+          updateDetail={(value) => { /*this.props.updateScheduleDetail(selectn("id", this.props.schedule), value) */ alert("TODO"); }}
         />
         <ScheduleSessions
           history={this.props.history}
@@ -374,7 +377,6 @@ class ScheduleTable extends React.Component<any> {
         </TableBody>
         <DatePicker
           onClose={this.handleSelect}
-          type="student"
           excludes={this.props.schedules.filter(v => selectn("visible", v)).map(x => x.date)}
           component={(props) =>
             <TableCreate onClick={props.onClick}>
@@ -390,12 +392,27 @@ class ScheduleTable extends React.Component<any> {
 
 class ScheduleOverview extends React.Component<any> {
 
+  handleClick = () => {
+    alert("TODO");
+  }
+
   render() {
+    const date = selectn("date", this.props.schedule);
     return (
       <div style={{ gridArea: "basic" }}>
-        <TableTitle>
+        <TableTitle mb={2}>
           BASIC
         </TableTitle>
+        <Flex alignItems="center" ml={3}>
+          <Text fontSize="14px" mr={3} style={{ minWidth: "95px" }}>date</Text>
+          <Text>{date ? moment(date).format("YYYY-MM-DD (dddd) HH:mm") : null}</Text>
+          {date ? <EditButton onClick={this.handleClick} style={{ color: "rgba(22,27,72,0.3)" }} /> : null}
+        </Flex>
+        <Flex alignItems="center" ml={3}>
+          <Text fontSize="14px" mr={3} style={{ minWidth: "95px" }}>time</Text>
+          <Text>{selectn("time", this.props.schedule)}</Text>
+        </Flex>
+        <DetailField fetchedValue={selectn("detail", this.props.schedule)} handleSubmit={this.props.updateDetail} />
       </div>
     );
   }
@@ -413,7 +430,6 @@ class ScheduleSessions extends React.Component<any> {
   }
 
   render() {
-    console.log(this.props.sessions);
     return (
       <div style={{ gridArea: "session" }}>
         <TableTitle>

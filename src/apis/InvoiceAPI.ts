@@ -17,8 +17,9 @@ type ATTRIBUTE = "amount"
 const api = `${getAPI()}/invoice`;
 
 type InvoicePayload = {
-  sessions: [ID, string];
-  student: ID;
+  sessions: any;
+  extras: any;
+  student: any;
   cash?: number;
   card?: number;
   transfer?: number;

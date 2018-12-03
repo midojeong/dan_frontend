@@ -30,4 +30,4 @@ export const getScheduleSessions = async (id: ID) => {
 }
 
 //deprecated
-// export const updateSchedule = async (id: ID, attr: ATTRIBUTE, value: any) => await axios.get(`${api}/update/${attr}/${id}`, { [attr]: value });
+export const updateSchedule = async (id: ID, attr: any, value: any) => await axios.get(`${api}/update/${attr}/${id}`, { [attr]: value });

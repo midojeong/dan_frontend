@@ -26,6 +26,7 @@ import {
 import {
   getSchedule,
   getScheduleSessions,
+  updateSchedule,
 } from "../apis/ScheduleAPI";
 import {
   enroll,
@@ -140,6 +141,11 @@ export class CoursePage extends React.Component<any> {
     }
   }
 
+  updateScheduleDetail = async (id: any, detail: string) => {
+    await updateSchedule(id, "detail", detail);
+    this.fetchSchedule(id);
+  }
+
   //C
   updateAttendance = async (sessionId: any, attendance: number) => {
     await updateSessionAttendance(sessionId, { attendance });
@@ -219,6 +225,7 @@ export class CoursePage extends React.Component<any> {
                 fetchSchedules={this.fetchSchedules}
                 fetchSessions={this.fetchSessions}
                 updateSchedule={this.updateCourseSchedule}
+                updateScheduleDetail={this.updateScheduleDetail}
                 updateSessionDetail={this.updateSessionDetail}
                 updateAttendance={this.updateAttendance}
                 updateSessionDiscount={this.updateSessionDiscount}
