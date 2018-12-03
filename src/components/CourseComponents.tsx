@@ -297,6 +297,7 @@ export class CourseSchedule extends React.Component<ScheduleProps> {
 
   createSchedule = (payload) => {
     const { courseId } = this.props.match.params;
+    this.props.updateSchedule(courseId, { mode: "create", ...payload });
   }
 
   updateSchedule = (payload) => {
@@ -412,6 +413,7 @@ class ScheduleSessions extends React.Component<any> {
   }
 
   render() {
+    console.log(this.props.sessions);
     return (
       <div style={{ gridArea: "session" }}>
         <TableTitle>
