@@ -170,8 +170,9 @@ export class CoursePage extends React.Component<any> {
   }
 
   deleteCourse = async (id: any) => {
-    await deleteCourse(id);
-    await this.fetchCourses();
+    alert("개발중입니다. 등록된 student와 teacher, schedule이 있으면 삭제할 수 없습니다");
+    /* await deleteCourse(id); */
+    /* await this.fetchCourses(); */
   }
 
   componentDidMount() {
@@ -192,6 +193,7 @@ export class CoursePage extends React.Component<any> {
           <CourseTable
             {...this.props}
             createCourse={this.createCourse}
+            deleteCourse={this.deleteCourse}
             courses={this.state.courses} />
         </List>
         <Main>
@@ -210,7 +212,6 @@ export class CoursePage extends React.Component<any> {
               updateCourseDetail={this.updateCourseDetail}
               updateCourseAttribute={this.updateCourseAttribute}
               updateCourseTeacher={this.updateCourseTeacher}
-              deleteCourse={this.deleteCourse}
               deleteCourseTeacher={this.deleteCourseTeacher}
             />}
           />

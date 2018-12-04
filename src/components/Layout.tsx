@@ -34,6 +34,7 @@ const MenuWrapper = styled(Flex) <any>`
 `;
 
 const barColor: any = {
+  home: "rgba(22,27,72,0.7)",
   course: "hsl(0, 100%, 80%)",
   student: "hsl(50, 100%, 80%)",
   teacher: "hsl(100, 100%, 80%)",
@@ -91,6 +92,12 @@ export class Layout extends React.Component<any, any> {
     const goto = this.props.history.push;
     return (
       <Sidebar>
+        <Menu
+          bold
+          label="Home"
+          type="home"
+          current={routeTest(pathname, /^\/home$/)}
+          onClick={() => goto("/home")} />
         <Menu
           bold
           label="Course List"

@@ -2,6 +2,8 @@ import React from "react";
 
 export const InvoicePage = () => {
   return (
-    <div></div>
+    <div>
+      작업중
+    </div>
   );
 };

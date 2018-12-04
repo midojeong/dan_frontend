@@ -29,7 +29,9 @@ import {
 } from "../apis/ExtraMoneyAPI";
 import {
   createInvoice,
-  deleteInvoice
+  deleteInvoice,
+  updateInvoice,
+  getInvoiceReport,
 } from "../apis/InvoiceAPI";
 
 export class StudentPage extends React.Component<any> {
@@ -41,6 +43,7 @@ export class StudentPage extends React.Component<any> {
     invoices: [],
     sessions: [],
     extramoney: [],
+    invoiceReport: {},
   }
 
   createStudent = async (payload) => {
@@ -79,6 +82,11 @@ export class StudentPage extends React.Component<any> {
     this.setState({ extramoney: data });
   }
 
+  fetchInvoiceReport = async (id) => {
+    const data = (await getInvoiceReport(id) || []); // TOTO 더 나은 에러처리
+    this.setState({ invoiceReport: data });
+  }
+
   updateStudentAttribute = async (id: any, key: any, value: any) => {
     await updateStudent(id, key, value);
     this.fetchStudent(id);
@@ -111,6 +119,13 @@ export class StudentPage extends React.Component<any> {
   deleteExtra = async (id: any) => {
     await deleteExtra(id);
     this.fetchExtramoney(selectn("id", this.state.student));
+  }
+
+  updateInvoice = async (student: any, payload: any) => {
+    await Promise.all(
+      Object.entries(payload).map(([attr, value]) => updateInvoice(student, attr, value))
+    );
+    this.fetchInvoices(student);
   }
 
   updateExtraInvoice = async (id: any, invoiceId: any) => {
@@ -160,6 +175,12 @@ export class StudentPage extends React.Component<any> {
             />} />
           <Route path="/student/:id/invoice"
             render={(props: any) => <StudentInvoice
+              {...props}
+              invoices={this.state.invoices}
+              invoiceReport={this.state.invoiceReport}
+              fetchInvoices={this.fetchInvoices}
+              fetchInvoiceReport={this.fetchInvoiceReport}
+              updateInvoice={this.updateInvoice}
             />} />
           <Route path="/student/:id/payment"
             render={(props: any) => <StudentPayment
@@ -172,6 +193,7 @@ export class StudentPage extends React.Component<any> {
               extramoney={this.state.extramoney}
               createExtra={this.createExtra}
               createInvoice={this.createInvoice}
+              updateInvoice={this.updateInvoice}
               deleteInvoice={this.deleteInvoice}
               deleteExtra={this.deleteExtra}
               updateExtra={this.updateExtra}

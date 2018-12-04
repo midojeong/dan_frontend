@@ -152,7 +152,7 @@ class CourseTable extends React.Component<any> {
       <div style={{ gridArea: "course" }}>
         <Table>
           <TableTitle>
-            COURSES
+            COURSES(작업중)
           </TableTitle>
         </Table>
       </div>

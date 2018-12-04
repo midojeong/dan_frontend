@@ -49,11 +49,11 @@ export const getInvoiceReport = async (id: ID) => {
     const res = await axios.get(`${api}/report/${id}`);
     return res.data.result;
   } catch (error) {
-    return [];
+    return {};
   }
 }
 
-export const updateInvoice = async (id: ID, attr: ATTRIBUTE, value: any) => await axios.post(`${api}/update/${attr}/${id}`, { [attr]: value });
+export const updateInvoice = async (id: ID, attr: any, value: any) => await axios.post(`${api}/update/${attr}/${id}`, { [attr]: value });
 
 export const deleteInvoice = async (id: ID) => {
   try {

@@ -11,6 +11,7 @@ import { CoursePage } from "./pages/Course";
 import { StudentPage } from "./pages/Student";
 import { TeacherPage } from "./pages/Teacher";
 import { InvoicePage } from "./pages/Invoice";
+import { HomePage } from "./pages/Home";
 
 
 class App extends Component {
@@ -20,6 +21,7 @@ class App extends Component {
         <ThemeProvider theme={theme}>
           <Route path="/" render={(props) =>
             <Layout {...props}>
+              <Route path="/home" component={HomePage} />
               <Route path="/course" component={CoursePage} />
               <Route path="/student" component={StudentPage} />
               <Route path="/teacher" component={TeacherPage} />

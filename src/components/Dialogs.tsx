@@ -102,6 +102,12 @@ export class TextfieldDialog extends React.Component<any, any> {
     value: {},
   };
 
+  componentDidMount() {
+    if (this.props.value) {
+      this.setState({ value: this.props.value });
+    }
+  }
+
   handleClickOpen = () => {
     this.setState({ open: true, value: this.props.value || {} });
   };
