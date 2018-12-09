@@ -625,7 +625,7 @@ class ExtraTable extends React.Component<any> {
           fields={["amount", "detail"]}
           placeholders={["10000", "write some descriptions"]}
           errorHandler={[
-            money => (parseInt(money) <= 0),
+            money => (parseInt(money) == 0),
             () => false,
           ]}
           types={["number", "text"]}
