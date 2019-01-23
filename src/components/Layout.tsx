@@ -24,7 +24,7 @@ const MenuWrapper = styled(Flex) <any>`
   :hover {
     background: rgba(22,27,72,0.1);
     > p {
-      color: ${theme.colors.blue.deep};
+      color: rgba(69,78,223, 0.9);
     }
   }
   > p {
